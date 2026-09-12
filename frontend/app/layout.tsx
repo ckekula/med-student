@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from '@clerk/nextjs'
 import Header from "@/components/shared/header";
+import Footer from "@/components/shared/footer";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="w-7xl mx-auto px-8">
             <Header />
             {children}
+            <Footer />
           </div>
         </ClerkProvider>
       </body>

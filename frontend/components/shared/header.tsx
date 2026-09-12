@@ -54,7 +54,7 @@ export default function Header() {
       {/* Desktop */}
       <NavBody className="px-8 py-6">
         <Link href="/" className="flex h-10 items-center">
-          <div className="text-xl font-bold leading-10">MedStudent.LK</div>
+          <div className="text-xl font-bold">MedStudent<span className="font-normal">.LK</span></div>
         </Link>
 
         <NavItems items={navItems} />
@@ -77,7 +77,7 @@ export default function Header() {
       {/* Mobile */}
       <MobileNav className="px-8 py-6">
         <MobileNavHeader className="h-10">
-          <div className="text-xl font-bold leading-10">MedStudent.LK</div>
+          <div className="text-xl font-bold">MedStudent<span className="font-normal">.LK</span></div>
 
           <MobileNavToggle
             isOpen={isMobileMenuOpen}
