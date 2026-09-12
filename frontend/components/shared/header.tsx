@@ -10,22 +10,27 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import {
+  Show,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import Link from "next/link";
 
 import { useState } from "react";
 
 const navItems = [
   {
-    name: "ABOUT",
-    link: "/about",
+    name: "OSCE",
+    link: "/osce",
   },
   {
-    name: "SERVICES",
-    link: "/services",
+    name: "NOTES",
+    link: "/notes",
   },
   {
-    name: "CONTACT",
-    link: "/contact",
+    name: "SHOP",
+    link: "/shop",
   },
   {
     name: "BLOG",
@@ -54,7 +59,19 @@ export default function Header() {
 
         <NavItems items={navItems} />
 
-        <NavbarButton href="/contact" variant="accent" className="">Get Started</NavbarButton>
+        <Show when="signed-out">
+          <div className="flex items-center gap-3">
+            <SignUpButton mode="modal">
+              <NavbarButton variant="accent">
+                Get Started
+              </NavbarButton>
+            </SignUpButton>
+          </div>
+        </Show>
+
+        <Show when="signed-in">
+          <UserButton />
+        </Show>
       </NavBody>
 
       {/* Mobile */}
