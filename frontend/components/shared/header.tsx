@@ -15,15 +15,15 @@ import { useState } from "react";
 
 const navItems = [
   {
-    name: "About",
+    name: "ABOUT",
     link: "/about",
   },
   {
-    name: "Services",
+    name: "SERVICES",
     link: "/services",
   },
   {
-    name: "Contact",
+    name: "CONTACT",
     link: "/contact",
   },
 ];
@@ -32,9 +32,9 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <Navbar className="h-20">
+    <Navbar>
       {/* Desktop */}
-      <NavBody className="h-full px-8 py-6">
+      <NavBody className="px-8 py-6">
         <div className="flex h-10 items-center">
           <div className="text-xl font-bold leading-10">MedStudent.LK</div>
         </div>
@@ -45,7 +45,7 @@ export default function Header() {
       </NavBody>
 
       {/* Mobile */}
-      <MobileNav className="h-full px-8 py-6">
+      <MobileNav className="px-8 py-6">
         <MobileNavHeader className="h-10">
           <div className="text-xl font-bold leading-10">MedStudent.LK</div>
 
