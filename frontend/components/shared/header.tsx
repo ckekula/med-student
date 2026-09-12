@@ -10,6 +10,7 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import Link from "next/link";
 
 import { useState } from "react";
 
@@ -26,22 +27,34 @@ const navItems = [
     name: "CONTACT",
     link: "/contact",
   },
+  {
+    name: "BLOG",
+    link: "/blog",
+  },
+  // {
+  //   name: "FAQ",
+  //   link: "/faq",
+  // },
+  // {
+  //   name: "LOGIN",
+  //   link: "/login",
+  // }
 ];
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <Navbar>
+    <Navbar className="mb-20">
       {/* Desktop */}
       <NavBody className="px-8 py-6">
-        <div className="flex h-10 items-center">
+        <Link href="/" className="flex h-10 items-center">
           <div className="text-xl font-bold leading-10">MedStudent.LK</div>
-        </div>
+        </Link>
 
         <NavItems items={navItems} />
 
-        <NavbarButton href="/contact">Get Started</NavbarButton>
+        <NavbarButton href="/contact" variant="accent" className="">Get Started</NavbarButton>
       </NavBody>
 
       {/* Mobile */}
