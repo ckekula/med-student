@@ -1,6 +1,6 @@
 
-export default function Notes() {
+export default function NotesPage() {
   return (
-    <div>page</div>
+    <div>NotesPage</div>
   )
 }
