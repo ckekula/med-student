@@ -1,9 +1,11 @@
 import Hero from "@/components/home/hero";
+import Resources from "@/components/home/resources";
 
 export default function Homepage() {
   return (
-    <div className="w-full h-300">
+    <div>
       <Hero />
+      <Resources />
     </div>
   );
 }
