@@ -1,6 +1,18 @@
 services:
-  api:
-    build: .
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:8000
+
+  backend:
+    build: ./backend
+
+  osce-chatbot-service:
+    build: ./osce-chatbot
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
@@ -25,7 +37,7 @@ services:
     #           count: 1
     #           capabilities: [gpu]
 
-  db:
+  osce-chatbot-db:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-osce}
@@ -41,7 +53,7 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
+  osce-chatbot-redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
