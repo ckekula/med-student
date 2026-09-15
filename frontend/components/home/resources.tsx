@@ -5,7 +5,7 @@ export default function Resources() {
   const resources = [
     {
       title: "OSCE Stations",
-      subtitle: "1300+ interactive scenarios",
+      subtitle: "1300+ interactive consultation scenarios with AI-powered virtual patients",
       image: "/hero.png",
     },
     {
@@ -14,13 +14,13 @@ export default function Resources() {
       image: "/hero.png",
     },
     {
-      title: "Virtual Patients",
-      subtitle: "AI-powered consultations and examiners",
+      title: "Notes",
+      subtitle: "100+ summary notes",
       image: "/hero.png",
     },
     {
-      title: "Notes",
-      subtitle: "100+ summary notes",
+      title: "Chatbots",
+      subtitle: "Highly accurate chatbots for question-answering",
       image: "/hero.png",
     },
   ];

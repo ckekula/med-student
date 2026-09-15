@@ -26,11 +26,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
-          <div className="w-7xl mx-auto px-8">
-            <Header />
-            {children}
-            <Footer />
-          </div>
+          <Header />
+            <div className="w-7xl mx-auto px-8">
+              {children}
+            </div>
+          <Footer />
         </ClerkProvider>
       </body>
     </html>

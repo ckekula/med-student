@@ -9,7 +9,7 @@ const footerLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+    <footer className="border-t-2">
       <div className="mx-auto max-w-7xl px-6 py-16 md:px-8">
         {/* Logo */}
         <div className="flex justify-center">
