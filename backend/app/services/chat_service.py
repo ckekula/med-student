@@ -7,7 +7,14 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.llm.factory import UnsupportedProviderError, get_provider
-from app.models import Case, Conversation, ConversationStatus, Message, Persona, SenderRole
+from app.models import (
+    Case,
+    Conversation,
+    ConversationStatus,
+    Message,
+    Persona,
+    SenderRole,
+)
 from app.prompts.system_prompt_builder import build_system_prompt
 from app.services.session_service import SessionService
 

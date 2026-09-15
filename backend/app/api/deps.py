@@ -4,7 +4,7 @@ from fastapi import Depends
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import get_current_user_id
+from app.auth.auth import get_current_user_id
 from app.db.session import get_db
 from app.redis.client import get_redis
 
