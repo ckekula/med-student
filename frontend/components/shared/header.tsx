@@ -11,6 +11,11 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import Link from "next/link";
+import {
+  Show,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 
 import { useState } from "react";
 
@@ -48,11 +53,19 @@ export default function Header() {
 
         <NavItems items={navItems} />
 
-        <div className="flex items-center gap-3">
-          <NavbarButton variant="accent" href="/signup">
-            Get Started
-          </NavbarButton>
-        </div>
+        <Show when="signed-out">
+          <div className="flex items-center gap-3">
+            <SignUpButton mode="modal">
+              <NavbarButton variant="accent">
+                Get Started
+              </NavbarButton>
+            </SignUpButton>
+          </div>
+        </Show>
+
+        <Show when="signed-in">
+          <UserButton />
+        </Show>
       </NavBody>
 
       {/* Mobile */}
