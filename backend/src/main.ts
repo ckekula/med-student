@@ -1,21 +1,16 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { AppModule, ObserveInstrument } from './app.module.js';
+import { AppModule } from './app.module.js';
 import helmet from 'helmet';
 import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false, // Required for Better Auth
+  });
 
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          scriptSrc: [`'self'`, `'unsafe-inline'`, 'cdn.jsdelivr.net'], // for graphql playground
-        },
-      },
-    }),
-  );
+  app.use(helmet());
 
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:3000',
@@ -32,14 +27,12 @@ async function bootstrap() {
     }),
   );
 
-  // 5. Lifecycle: Ensure graceful shutdown on container/process termination
   app.enableShutdownHooks();
 
-  // 6. Execution: Bind to environment port or default fallback
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3001;
   await app.listen(port);
 
-  logger.log(`Application successfully running in production on port: ${port}`);
+  logger.log(`Application successfully running on port: ${port}`);
 }
 
 bootstrap();
