@@ -10,11 +10,6 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import {
-  Show,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
 import Link from "next/link";
 
 import { useState } from "react";
@@ -36,14 +31,6 @@ const navItems = [
     name: "BLOG",
     link: "/blog",
   },
-  // {
-  //   name: "FAQ",
-  //   link: "/faq",
-  // },
-  // {
-  //   name: "LOGIN",
-  //   link: "/login",
-  // }
 ];
 
 export default function Header() {
@@ -53,31 +40,27 @@ export default function Header() {
     <Navbar className="mb-20">
       {/* Desktop */}
       <NavBody className="px-8 py-6">
-        <Link href="/" className="flex h-10 items-center">
-          <div className="text-xl font-bold">MedStudent<span className="font-normal">.LK</span></div>
+        <Link href="/" className="z-100 flex h-10 items-center cursor-pointer">
+          <div className="text-xl font-bold">
+            MedStudent<span className="font-normal">.LK</span>
+          </div>
         </Link>
 
         <NavItems items={navItems} />
 
-        <Show when="signed-out">
-          <div className="flex items-center gap-3">
-            <SignUpButton mode="modal">
-              <NavbarButton variant="accent">
-                Get Started
-              </NavbarButton>
-            </SignUpButton>
-          </div>
-        </Show>
-
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
+        <div className="flex items-center gap-3">
+          <NavbarButton variant="accent" href="/signup">
+            Get Started
+          </NavbarButton>
+        </div>
       </NavBody>
 
       {/* Mobile */}
       <MobileNav className="px-8 py-6">
         <MobileNavHeader className="h-10">
-          <div className="text-xl font-bold">MedStudent<span className="font-normal">.LK</span></div>
+          <Link href="/" className="z-100 text-xl font-bold">
+            MedStudent<span className="font-normal">.LK</span>
+          </Link>
 
           <MobileNavToggle
             isOpen={isMobileMenuOpen}
@@ -90,14 +73,14 @@ export default function Header() {
           onClose={() => setIsMobileMenuOpen(false)}
         >
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.link}
               href={item.link}
               onClick={() => setIsMobileMenuOpen(false)}
               className="w-full"
             >
               {item.name}
-            </a>
+            </Link>
           ))}
         </MobileNavMenu>
       </MobileNav>

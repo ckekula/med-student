@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const footerLinks = [
   { title: "OSCE Stations", href: "/osce-stations" },
@@ -49,7 +50,7 @@ export default function Footer() {
               aria-label="Instagram"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Instagram
+              <FaInstagram />
             </Link>
 
             <Link
@@ -57,15 +58,7 @@ export default function Footer() {
               aria-label="Facebook"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Facebook
-            </Link>
-
-            <Link
-              href="#"
-              aria-label="LinkedIn"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              LinkedIn
+              <FaFacebook />
             </Link>
 
             <Link
@@ -73,7 +66,7 @@ export default function Footer() {
               aria-label="YouTube"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              YouTube
+              <FaYoutube />
             </Link>
           </div>
         </div>

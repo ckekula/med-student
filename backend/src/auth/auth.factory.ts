@@ -15,6 +15,7 @@ export function createAuth(orm: MikroORM) {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       },
     },
+    trustedOrigins: [process.env.FRONTEND_URL!],
   });
 }
 
