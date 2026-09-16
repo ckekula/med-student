@@ -1,70 +1,60 @@
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: nextjs-app:latest
+    restart: unless-stopped
     ports:
       - "3000:3000"
-    env_file:
-      - .env
     environment:
-      REACT_APP_BACKEND_URL: http://localhost:8000
+      NODE_ENV: ${NODE_ENV}
+    # env_file: .env.production
+    env_file: ./frontend/.env # .env.production
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   backend:
-    build: ./backend
-
-  osce-chatbot-service:
-    build: ./osce-chatbot
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: fastapi-service:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-app}
+    # env_file: .env.production
     ports:
       - "8000:8000"
-    env_file:
-      - .env
-    environment:
-      POSTGRES_HOST: db
-      REDIS_HOST: redis
-    volumes:
-      - .:/app
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    # Uncomment to expose GPU for local HuggingFace inference (requires nvidia-container-toolkit):
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
-  osce-chatbot-db:
-    image: postgres:16-alpine
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-osce}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-osce}
-      POSTGRES_DB: ${POSTGRES_DB:-osce}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-osce}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  osce-chatbot-redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-app}"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  postgres_data:
-  redis_data:
+  pgdata:
