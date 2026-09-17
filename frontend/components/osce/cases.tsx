@@ -5,7 +5,7 @@ export const cards = [
     title: "Breast lump",
     src: "https://assets.aceternity.com/demos/lana-del-rey.jpeg",
     ctaText: "Start",
-    ctaLink: "osce/stations/1",
+    ctaLink: "osce/station/1",
     content: () => {
       return (
         <p>
