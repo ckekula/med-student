@@ -11,8 +11,8 @@ class Settings(BaseSettings):
 
     # App
     APP_NAME: str = "MedStudent.lk Backend"
-    ENVIRONMENT: Literal["development", "staging", "production"] = "development"
-    DEBUG: bool = False
+    ENVIRONMENT: Literal["development", "production"] = "development"
+    DEBUG: bool = True
     API_V1_PREFIX: str = "/api/v1"
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
 
-    # Clerk auth
+    # Clerk
     CLERK_JWKS_URL: str = ""  # e.g. https://<your-domain>.clerk.accounts.dev/.well-known/jwks.json
     CLERK_ISSUER: str = ""
     CLERK_AUDIENCE: str | None = None
