@@ -61,7 +61,6 @@ async def create_long_case(payload: LongCaseCreate, db: DbSession, _admin: Admin
 @router.get("", response_model=list[LongCaseRead])
 async def list_long_cases(
     db: DbSession,
-    _user_id: CurrentUserId,
     specialty: str | None = None,
     is_active: bool | None = None,
     skip: int = Query(0, ge=0),
