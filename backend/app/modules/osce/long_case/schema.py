@@ -5,21 +5,6 @@ from app.modules.osce.long_case.enums import *
 from app.modules.osce.schema import ORMBase
 from pydantic import BaseModel, Field
 
-LongCaseCategory = (
-    MedicineLongCaseCategory
-    | SurgeryLongCaseCategory
-    | PsychiatryLongCaseCategory
-    | PaediatricsLongCaseCategory
-    | GynObsLongCaseCategory
-)
-ExaminationName = (
-    MedicineExaminationName
-    | SurgeryExaminationName
-    | PsychiatryExaminationName
-    | PaediatricsExaminationName
-    | GynObsExaminationName
-)
-
 
 # LongCase
 class LongCaseBase(BaseModel):
@@ -92,7 +77,7 @@ class PatientProfileRead(PatientProfileBase, ORMBase):
 
 # HistoryItem
 class HistoryItemBase(BaseModel):
-    category: GeneralHistoryItemCategory | PaedHistoryItemCategory | GynObsHistoryItemCategory
+    category: HistoryItemCategory
     description: str
     points: float = 1.0
     is_critical: bool = False
@@ -103,7 +88,7 @@ class HistoryItemCreate(HistoryItemBase):
 
 
 class HistoryItemUpdate(BaseModel):
-    category: GeneralHistoryItemCategory | PaedHistoryItemCategory | GynObsHistoryItemCategory | None = None
+    category: HistoryItemCategory | None = None
     description: str | None = None
     points: float | None = None
     is_critical: bool | None = None

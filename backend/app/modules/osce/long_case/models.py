@@ -23,9 +23,7 @@ class LongCase(Base):
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     specialty: Mapped[Specialty] = mapped_column(Enum(Specialty), nullable=False, index=True)
-    category: Mapped[MedicineLongCaseCategory | SurgeryLongCaseCategory | PsychiatryLongCaseCategory | PaediatricsLongCaseCategory | GynObsLongCaseCategory
-                     ] = mapped_column(Enum(MedicineLongCaseCategory, SurgeryLongCaseCategory, PsychiatryLongCaseCategory, PaediatricsLongCaseCategory, GynObsLongCaseCategory
-                                            ), nullable=True)
+    category: Mapped[LongCaseCategory] = mapped_column(Enum(LongCaseCategory), nullable=True)
     difficulty: Mapped[DifficultyLevel] = mapped_column(Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.MODERATE)
     description: Mapped[str | None] = mapped_column(Text)
     time_limit_seconds: Mapped[int | None] = mapped_column()
@@ -72,8 +70,7 @@ class HistoryItem(Base):
     __tablename__ = "history_items"
 
     long_case_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False, index=True)
-    category: Mapped[GeneralHistoryItemCategory | PaedHistoryItemCategory | GynObsHistoryItemCategory
-                     ] = mapped_column(Enum(GeneralHistoryItemCategory, PaedHistoryItemCategory, GynObsHistoryItemCategory), nullable=False, index=True)
+    category: Mapped[HistoryItemCategory] = mapped_column(Enum(HistoryItemCategory), nullable=False, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
     is_critical: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)  # A missed critical item can fail the attempt outright regardless of total score
@@ -89,9 +86,7 @@ class LongCaseExamination(Base):
 
     __tablename__ = "long_case_examinations"
     long_case_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False, index=True)
-    name: Mapped[MedicineExaminationName | SurgeryExaminationName | PsychiatryExaminationName | PaediatricsExaminationName | GynObsExaminationName
-                 ] = mapped_column(Enum(MedicineExaminationName, SurgeryExaminationName, PsychiatryExaminationName, PaediatricsExaminationName, GynObsExaminationName
-                                        ), nullable=False)
+    name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName), nullable=False)
     findings: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
 
