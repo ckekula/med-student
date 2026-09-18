@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     CLERK_JWKS_URL: str = ""  # e.g. https://<your-domain>.clerk.accounts.dev/.well-known/jwks.json
     CLERK_ISSUER: str = ""
     CLERK_AUDIENCE: str | None = None
+    CLERK_WEBHOOK_SECRET: str = ""  # from Clerk Dashboard > Webhooks > your endpoint > Signing Secret
     AUTH_ENABLED: bool = True
 
     # LLM provider credentials

@@ -6,22 +6,22 @@ export default function Resources() {
     {
       title: "OSCE Stations",
       subtitle: "1300+ interactive consultation scenarios with AI-powered virtual patients",
-      image: "/hero.png",
+      image: "/grandma.png",
     },
     {
       title: "Question Bank",
       subtitle: "50,000+ free MCQs",
-      image: "/hero.png",
+      image: "/summary.png",
     },
     {
       title: "Notes",
       subtitle: "100+ summary notes",
-      image: "/hero.png",
+      image: "/student.png",
     },
     {
       title: "Chatbots",
       subtitle: "Highly accurate chatbots for question-answering",
-      image: "/hero.png",
+      image: "/doctor.png",
     },
   ];
 
@@ -41,11 +41,11 @@ export default function Resources() {
             header={
               <div className="h-48 w-full overflow-hidden rounded-xl">
                 <Image
-                width={100}
-                height={100}
+                  width={100}
+                  height={100}
                   src={resource.image}
                   alt={resource.title}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover/bento:scale-105"
+                  className="h-full w-fit object-cover transition-transform duration-300 group-hover/bento:scale-105"
                 />
               </div>
             }

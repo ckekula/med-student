@@ -95,9 +95,9 @@ export default function HistoryChat() {
   const groups = groupMessages(messages)
 
   return (
-    <div className="flex h-150 w-full flex-col">
+    <div className="flex h-120 w-full flex-col">
       <MessageScrollerProvider autoScroll>
-        <MessageScroller className="flex-1">
+        <MessageScroller className="min-h-0 flex-1">
           <MessageScrollerViewport>
             <MessageScrollerContent className="flex flex-col gap-6 py-12">
               {groups.map((group) => {

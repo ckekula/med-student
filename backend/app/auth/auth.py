@@ -2,15 +2,17 @@ from functools import lru_cache
 
 import httpx
 import jwt
+from app.config import get_settings
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 
-from app.config import get_settings
-
 settings = get_settings()
 bearer_scheme = HTTPBearer(auto_error=False)
 credentials = Depends(bearer_scheme)
+
+ADMIN_ORG_ROLE = "org:admin"
+
 
 @lru_cache
 def _jwks_client() -> PyJWKClient:
@@ -19,15 +21,16 @@ def _jwks_client() -> PyJWKClient:
     return PyJWKClient(settings.CLERK_JWKS_URL)
 
 
-async def get_current_user_id(
+async def get_current_token_payload(
     credentials: HTTPAuthorizationCredentials | None = credentials,
-) -> str:
-    """Verifies the Clerk-issued JWT sent by the frontend and returns the Clerk user id (`sub`).
+) -> dict:
+    """Verifies the Clerk-issued JWT sent by the frontend and returns its full claim set.
 
-    Set AUTH_ENABLED=false in local/.env to bypass this during early development.
+    Set AUTH_ENABLED=false in local/.env to bypass this during early development —
+    the dev payload is granted org:admin so local admin routes stay usable.
     """
     if not settings.AUTH_ENABLED:
-        return "dev-user"
+        return {"sub": "dev-user", "org_role": ADMIN_ORG_ROLE}
 
     if credentials is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing bearer token")
@@ -46,7 +49,28 @@ async def get_current_user_id(
     except (jwt.PyJWTError, httpx.HTTPError) as exc:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, f"Invalid token: {exc}") from exc
 
+    return payload
+
+
+current_token_payload = Depends(get_current_token_payload)
+
+async def get_current_user_id(
+    payload: dict = current_token_payload,
+) -> str:
+    """Returns the Clerk user id (`sub`) from the verified token."""
     sub = payload.get("sub")
     if not sub:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token missing 'sub' claim")
     return sub
+
+
+async def require_org_admin(
+    payload: dict = current_token_payload,
+) -> dict:
+    """Dependency that additionally requires the caller to hold the Clerk org:admin role.
+
+    Use on content-management routes (long cases and their nested resources).
+    """
+    if payload.get("org_role") != ADMIN_ORG_ROLE:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin access required")
+    return payload
