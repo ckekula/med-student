@@ -4,7 +4,6 @@ import * as React from "react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Bubble, BubbleContent, BubbleGroup } from "@/components/ui/bubble"
-import { Button } from "@/components/ui/button"
 import { Message, MessageAvatar, MessageContent } from "@/components/ui/message"
 import {
   MessageScroller,
@@ -14,7 +13,7 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller"
-import { Textarea } from "@/components/ui/textarea"
+import { ChatComposer } from "./chat-composer"
 
 export type ChatMessage = {
   id: string
@@ -123,23 +122,7 @@ export default function HistoryChat({
         </MessageScroller>
       </MessageScrollerProvider>
 
-      <div className="flex items-end gap-2 border-t p-4">
-        <Textarea
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          placeholder={isTimeUp ? "Time's up" : "Type a message..."}
-          className="min-h-11 flex-1 resize-none"
-          aria-label="Message"
-          disabled={isTimeUp}
-        />
-
-        <Button
-          onClick={handleSend}
-          disabled={isTimeUp || draft.trim().length === 0}
-        >
-          Send
-        </Button>
-      </div>
+      <ChatComposer isTimeUp={isTimeUp} onSend={handleSend} />
     </div>
   )
 }
