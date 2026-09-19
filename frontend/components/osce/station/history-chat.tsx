@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/message-scroller"
 import { Textarea } from "@/components/ui/textarea"
 
-type ChatMessage = {
+export type ChatMessage = {
   id: string
   role: "user" | "assistant"
   content: string
@@ -24,44 +24,19 @@ type ChatMessage = {
   avatarFallback: string
 }
 
-const INITIAL_MESSAGES: ChatMessage[] = [
-  {
-    id: "1",
-    role: "assistant",
-    content: "The build failed during dependency installation.",
-    avatarSrc: "/avatars/03.png",
-    avatarFallback: "R",
-  },
-  {
-    id: "2",
-    role: "user",
-    content: "Can you share the exact error?",
-    avatarSrc: "/avatars/10.png",
-    avatarFallback: "R",
-  },
-  {
-    id: "3",
-    role: "assistant",
-    content: "Here's the error from the logs",
-    avatarSrc: "/avatars/03.png",
-    avatarFallback: "R",
-  },
-  {
-    id: "4",
-    role: "assistant",
-    content:
-      "Something went wrong with the build. The libraries are not installed correctly. Try running the build again.",
-    avatarSrc: "/avatars/03.png",
-    avatarFallback: "R",
-  },
-]
+type HistoryChatProps = {
+  /** Owned by the parent so the conversation survives step changes. */
+  messages: readonly ChatMessage[]
+  onSendMessage: (message: ChatMessage) => void
+  isTimeUp: boolean
+}
 
-// Consecutive same-role messages are grouped into a single BubbleGroup.
-function groupMessages(messages: ChatMessage[]) {
+function groupMessages(messages: readonly ChatMessage[]) {
   const groups: ChatMessage[][] = []
 
   for (const message of messages) {
     const lastGroup = groups[groups.length - 1]
+
     if (lastGroup && lastGroup[0].role === message.role) {
       lastGroup.push(message)
     } else {
@@ -72,23 +47,25 @@ function groupMessages(messages: ChatMessage[]) {
   return groups
 }
 
-export default function HistoryChat() {
-  const [messages, setMessages] = React.useState<ChatMessage[]>(INITIAL_MESSAGES)
+export default function HistoryChat({
+  messages,
+  onSendMessage,
+  isTimeUp,
+}: HistoryChatProps) {
   const [draft, setDraft] = React.useState("")
 
   const handleSend = () => {
     const content = draft.trim()
-    if (!content) return
 
-    const newMessage: ChatMessage = {
+    if (!content || isTimeUp) return
+
+    onSendMessage({
       id: crypto.randomUUID(),
       role: "user",
       content,
       avatarSrc: "/avatars/10.png",
       avatarFallback: "R",
-    }
-
-    setMessages((prev) => [...prev, newMessage])
+    })
     setDraft("")
   }
 
@@ -102,6 +79,7 @@ export default function HistoryChat() {
             <MessageScrollerContent className="flex flex-col gap-6 py-12">
               {groups.map((group) => {
                 const first = group[0]
+
                 return (
                   <MessageScrollerItem
                     key={first.id}
@@ -115,6 +93,7 @@ export default function HistoryChat() {
                           <AvatarFallback>{first.avatarFallback}</AvatarFallback>
                         </Avatar>
                       </MessageAvatar>
+
                       <MessageContent>
                         {group.length > 1 ? (
                           <BubbleGroup>
@@ -139,6 +118,7 @@ export default function HistoryChat() {
               })}
             </MessageScrollerContent>
           </MessageScrollerViewport>
+
           <MessageScrollerButton />
         </MessageScroller>
       </MessageScrollerProvider>
@@ -147,11 +127,16 @@ export default function HistoryChat() {
         <Textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
-          placeholder="Type a message..."
+          placeholder={isTimeUp ? "Time's up" : "Type a message..."}
           className="min-h-11 flex-1 resize-none"
           aria-label="Message"
+          disabled={isTimeUp}
         />
-        <Button onClick={handleSend} disabled={draft.trim().length === 0}>
+
+        <Button
+          onClick={handleSend}
+          disabled={isTimeUp || draft.trim().length === 0}
+        >
           Send
         </Button>
       </div>

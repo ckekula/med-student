@@ -15,17 +15,6 @@ export const getLayoutId = (part: LayoutPart, caseId: string, scope: string) =>
 
 const MotionLink = motion.create(Link);
 
-function formatTimeLimit(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const parts: string[] = [];
-
-  if (minutes > 0) parts.push(`${minutes} min`);
-  if (seconds > 0) parts.push(`${seconds} sec`);
-
-  return parts.length > 0 ? parts.join(" ") : "0 sec";
-}
-
 interface ExpandedCardModalProps {
   longCase: LongCase | null;
   /** Value from useId(), shared with the list so layout IDs match. */
@@ -119,11 +108,9 @@ export function ExpandedCardModal({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="mt-1 text-sm text-neutral-500 dark:text-neutral-500"
+                      className="mt-1 text-sm capitalize text-neutral-500 dark:text-neutral-500"
                     >
-                      <span className="capitalize">{longCase.difficulty}</span>
-                      {" · "}
-                      {formatTimeLimit(longCase.time_limit_seconds)}
+                      {longCase.difficulty}
                     </motion.p>
                   </div>
 

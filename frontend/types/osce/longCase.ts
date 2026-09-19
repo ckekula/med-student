@@ -5,7 +5,6 @@ export interface LongCase {
   category: LongCaseCategory;
   difficulty: DifficultyLevel;
   description: string;
-  time_limit_seconds: number;
   is_active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -16,7 +15,7 @@ export interface PatientProfile {
   long_case_id: string;
   name: string;
   age: number;
-  sex: string;
+  sex: "male" | "female";
   occupation: string;
   location: string;
   marital_status: string;
@@ -39,7 +38,7 @@ export interface HistoryItem {
 export interface Examination {
   id: string;
   long_case_id: string;
-  name: string;
+  name: ExaminationName;
   findings: string;
   points: number;
   createdAt: string;
@@ -78,3 +77,5 @@ export type LongCaseCategory =
   | 'Gastrointestinal'
   | 'Obstretics'
   | 'Psychiatric';
+
+export type ExaminationName = 'Physical' | 'Neurological' | 'Respiratory' | 'Cardiovascular' | 'Gastrointestinal';

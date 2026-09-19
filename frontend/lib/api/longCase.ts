@@ -16,3 +16,19 @@ export async function getLongCases(): Promise<LongCase[]> {
     return [];
   }
 }
+
+export async function getLongCaseById(longCaseId: string): Promise<LongCase | null> {
+  try {
+    const res = await fetch(`${API_URL}/${longCaseId}`);
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch long case: ${res.status}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error("Error fetching long case:", error);
+    return null;
+  }
+}
