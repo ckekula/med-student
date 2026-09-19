@@ -13,7 +13,6 @@ class LongCaseBase(BaseModel):
     category: LongCaseCategory | None = None
     difficulty: DifficultyLevel = DifficultyLevel.FINAL_MBBS
     description: str | None = None
-    time_limit_seconds: int | None = None
     is_active: bool = True
     differential_diagnoses: list[str] = Field(default_factory=list)
     supporting_features: list[str] | None = Field(default_factory=list)
@@ -29,7 +28,6 @@ class LongCaseUpdate(BaseModel):
     category: LongCaseCategory | None = None
     difficulty: DifficultyLevel | None = None
     description: str | None = None
-    time_limit_seconds: int | None = None
     is_active: bool | None = None
     differential_diagnoses: list[str] | None = None
     supporting_features: list[str] | None = None

@@ -11,11 +11,11 @@ __all__ = [
 
 
 class Specialty(Enum):
-    MEDICINE = "Medicine"
-    SURGERY = "Surgery"
-    PAEDIATRICS = "Paediatrics"
-    GYNOBS = "GynObs"
-    PSYCHIATRY = "Psychiatry"
+    MEDICINE = "medicine"
+    SURGERY = "surgery"
+    PAEDIATRICS = "paediatrics"
+    GYNOBS = "gynobs"
+    PSYCHIATRY = "psychiatry"
 
 
 class LongCaseCategory(Enum):
@@ -73,7 +73,7 @@ class ExaminationName(Enum):
 
 class DifficultyLevel(Enum):
     FINAL_MBBS = "final_mbbs"
-    PG = "pst_graduate"
+    PG = "post_graduate"
 
 
 class HistoryItemCategory(Enum):

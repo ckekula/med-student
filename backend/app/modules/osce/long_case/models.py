@@ -33,7 +33,6 @@ class LongCase(Base):
         Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.FINAL_MBBS
     )
     description: Mapped[str | None] = mapped_column(Text)
-    time_limit_seconds: Mapped[int | None] = mapped_column()
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     patient_profile: Mapped["PatientProfile | None"] = relationship(
@@ -200,3 +199,19 @@ class DifferentialDiagnosis(Base):
 # 3. 
 # 4. 
 # 5. 
+
+## short case
+
+# medicine
+# command - examine this system
+# neuro - examine the lower/upper limbs OR upper/lower,... cranial nerves
+# what is the diagnosis (only one) / what are the investigations
+
+# paed - 7 mins
+# command - examine this system OR 
+#    development examination
+#    neonatal examination
+
+# surgery - 10 mins per bay.
+# 2 bays - upper / lower torso
+ 

@@ -76,8 +76,14 @@ async def list_long_cases(
     return result.scalars().all()
 
 
-@router.get("/{long_case_id}", response_model=LongCaseDetail)
-async def get_long_case(long_case_id: uuid.UUID, db: DbSession, _user_id: CurrentUserId):
+@router.get("/{long_case_id}", response_model=LongCaseRead)
+async def get_long_case(long_case_id: uuid.UUID, db: DbSession):
+    long_case = await _get_long_case_or_404(db, long_case_id)
+    return long_case
+
+
+@router.get("/{long_case_id}/details", response_model=LongCaseDetail)
+async def get_long_case_details(long_case_id: uuid.UUID, db: DbSession):
     stmt = (
         select(LongCase)
         .where(LongCase.id == long_case_id)
