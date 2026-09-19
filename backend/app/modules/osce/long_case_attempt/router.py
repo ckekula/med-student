@@ -5,14 +5,14 @@ from app.dependencies import CurrentDbUser, DbSession
 from app.modules.osce.long_case.models import LongCase
 from app.modules.osce.long_case_attempt.models import (
     LongCaseAttempt,
-    LongCaseAttemptExaminationLog,
+    LongCaseAttemptExaminationSelection,
     LongCaseAttemptHistoryResult,
     LongCaseAttemptMessage,
 )
 from app.modules.osce.long_case_attempt.schema import (
     LongCaseAttemptCreate,
-    LongCaseAttemptExaminationLogCreate,
-    LongCaseAttemptExaminationLogRead,
+    LongCaseAttemptExaminationSelectionCreate,
+    LongCaseAttemptExaminationSelectionRead,
     LongCaseAttemptHistoryResultCreate,
     LongCaseAttemptHistoryResultRead,
     LongCaseAttemptHistoryResultUpdate,
@@ -140,42 +140,42 @@ async def delete_message(attempt_id: uuid.UUID, message_id: uuid.UUID, db: DbSes
     await db.commit()
 
 
-# LongCaseAttemptExaminationLog — append-only log
+# LongCaseAttemptExaminationSelection
 @router.post(
-    "/{attempt_id}/examination-logs",
-    response_model=LongCaseAttemptExaminationLogRead,
+    "/{attempt_id}/examination-selections",
+    response_model=LongCaseAttemptExaminationSelectionRead,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_examination_log(
-    attempt_id: uuid.UUID, payload: LongCaseAttemptExaminationLogCreate, db: DbSession, user: CurrentDbUser
+    attempt_id: uuid.UUID, payload: LongCaseAttemptExaminationSelectionCreate, db: DbSession, user: CurrentDbUser
 ):
     await _get_own_attempt_or_404(db, user, attempt_id)
-    log = LongCaseAttemptExaminationLog(attempt_id=attempt_id, created_at=datetime.now(UTC), **payload.model_dump())
+    log = LongCaseAttemptExaminationSelection(attempt_id=attempt_id, created_at=datetime.now(UTC), **payload.model_dump())
     db.add(log)
     await db.commit()
     await db.refresh(log)
     return log
 
 
-@router.get("/{attempt_id}/examination-logs", response_model=list[LongCaseAttemptExaminationLogRead])
+@router.get("/{attempt_id}/examination-selections", response_model=list[LongCaseAttemptExaminationSelectionRead])
 async def list_examination_logs(attempt_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
     await _get_own_attempt_or_404(db, user, attempt_id)
     result = await db.execute(
-        select(LongCaseAttemptExaminationLog).where(LongCaseAttemptExaminationLog.attempt_id == attempt_id)
+        select(LongCaseAttemptExaminationSelection).where(LongCaseAttemptExaminationSelection.attempt_id == attempt_id)
     )
     return result.scalars().all()
 
 
-@router.get("/{attempt_id}/examination-logs/{log_id}", response_model=LongCaseAttemptExaminationLogRead)
+@router.get("/{attempt_id}/examination-selections/{log_id}", response_model=LongCaseAttemptExaminationSelectionRead)
 async def get_examination_log(attempt_id: uuid.UUID, log_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
     await _get_own_attempt_or_404(db, user, attempt_id)
-    return await _get_nested_or_404(db, LongCaseAttemptExaminationLog, attempt_id, log_id)
+    return await _get_nested_or_404(db, LongCaseAttemptExaminationSelection, attempt_id, log_id)
 
 
-@router.delete("/{attempt_id}/examination-logs/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{attempt_id}/examination-selections/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_examination_log(attempt_id: uuid.UUID, log_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
     await _get_own_attempt_or_404(db, user, attempt_id)
-    log = await _get_nested_or_404(db, LongCaseAttemptExaminationLog, attempt_id, log_id)
+    log = await _get_nested_or_404(db, LongCaseAttemptExaminationSelection, attempt_id, log_id)
     await db.delete(log)
     await db.commit()
 

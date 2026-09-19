@@ -11,7 +11,7 @@ class LongCaseBase(BaseModel):
     title: str = Field(..., max_length=255)
     specialty: Specialty
     category: LongCaseCategory | None = None
-    difficulty: DifficultyLevel = DifficultyLevel.MODERATE
+    difficulty: DifficultyLevel = DifficultyLevel.FINAL_MBBS
     description: str | None = None
     time_limit_seconds: int | None = None
     is_active: bool = True

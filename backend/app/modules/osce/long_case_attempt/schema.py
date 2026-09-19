@@ -55,14 +55,14 @@ class LongCaseAttemptMessageRead(ORMBase):
 
 
 # ---------------------------------------------------------------------------
-# LongCaseAttemptExaminationLog — append-only log (no update endpoint)
+# LongCaseAttemptExaminationSelection — no update endpoint
 # ---------------------------------------------------------------------------
-class LongCaseAttemptExaminationLogCreate(BaseModel):
+class LongCaseAttemptExaminationSelectionCreate(BaseModel):
     query_text: str
     examination_id: uuid.UUID | None = None
 
 
-class LongCaseAttemptExaminationLogRead(ORMBase):
+class LongCaseAttemptExaminationSelectionRead(ORMBase):
     id: uuid.UUID
     attempt_id: uuid.UUID
     query_text: str
