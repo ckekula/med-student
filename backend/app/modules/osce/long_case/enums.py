@@ -19,6 +19,7 @@ class Specialty(Enum):
 
 
 class LongCaseCategory(Enum):
+    # medicine
     ACUTE_FEVER = "Acute Fever"
     PROLONGED_FEVER_PUO = "Prolonged fever/ PUO"
     DIABETES_MELLITUS = "Diabetes mellitus"
@@ -71,9 +72,8 @@ class ExaminationName(Enum):
 
 
 class DifficultyLevel(Enum):
-    EASY = "easy"
-    MODERATE = "moderate"
-    HARD = "hard"
+    FINAL_MBBS = "final_mbbs"
+    PG = "pst_graduate"
 
 
 class HistoryItemCategory(Enum):

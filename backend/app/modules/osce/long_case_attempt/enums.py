@@ -7,7 +7,6 @@ __all__ = [
 ]
 
 class AttemptStatus(Enum):
-    NOT_STARTED = "not_started"
     IN_PROGRESS_HISTORY = "in_progress_history"
     HISTORY_COMPLETE = "history_complete"
     IN_PROGRESS_EXAMINATION = "in_progress_examination"
