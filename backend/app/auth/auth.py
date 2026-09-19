@@ -24,14 +24,9 @@ def _jwks_client() -> PyJWKClient:
 async def get_current_token_payload(
     credentials: HTTPAuthorizationCredentials | None = credentials,
 ) -> dict:
-    """Verifies the Clerk-issued JWT sent by the frontend and returns its full claim set.
-
-    Set AUTH_ENABLED=false in local/.env to bypass this during early development —
-    the dev payload is granted org:admin so local admin routes stay usable.
     """
-    if not settings.AUTH_ENABLED:
-        return {"sub": "dev-user", "org_role": ADMIN_ORG_ROLE}
-
+    Verifies the Clerk-issued JWT sent by the frontend and returns its full claim set.
+    """
     if credentials is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing bearer token")
 

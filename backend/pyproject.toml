@@ -16,6 +16,7 @@ dependencies = [
     "llama-index>=0.14.24",
     "llama-parse>=0.6.94",
     "pyjwt>=2.14.0",
+    "slowapi>=0.1.10",
     "sqlalchemy[asyncio]>=2.0.52",
     "svix>=2.5.0",
     "transformers>=5.17.0",
