@@ -1,8 +1,14 @@
+import SidebarDemo from "@/components/sidebar-demo";
+import { auth } from "@clerk/nextjs/server";
 
-export default function HomePage() {
+export default async function HomePage() {
+  await auth.protect();
+
   return (
     <main>
-      <div>Hello, World!</div>
+      <div>
+        <SidebarDemo />
+      </div>
     </main>
   );
 }
