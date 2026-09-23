@@ -41,7 +41,7 @@ export default function ExpandableCardStandard({
                 <Image
                   width={100}
                   height={100}
-                  src={getLongCaseImage(longCase.category)}
+                  src={getLongCaseImage(longCase.category!)}
                   alt={longCase.title}
                   className="h-40 w-40 md:h-14 md:w-14 rounded-lg object-cover object-top"
                 />

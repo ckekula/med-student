@@ -73,6 +73,16 @@ export function OSCEStepper() {
       description: "Present your summary",
       component: <SummaryChat />,
     },
+    {
+      title: "Discussion",
+      description: "Discuss your summary with the examiner",
+      component: <div>Discussion</div>,
+    },
+    {
+      title: "Marking",
+      description: "Your performance will be marked by the examiner",
+      component: <div>Marking</div>,
+    }
   ]
 
   return (

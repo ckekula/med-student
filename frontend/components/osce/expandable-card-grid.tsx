@@ -40,7 +40,7 @@ export default function ExpandableCardGrid({
                 <Image
                   width={100}
                   height={100}
-                  src={getLongCaseImage(longCase.category)}
+                  src={getLongCaseImage(longCase.category!)}
                   alt={longCase.title}
                   className="h-60 w-full rounded-lg object-cover object-top"
                 />

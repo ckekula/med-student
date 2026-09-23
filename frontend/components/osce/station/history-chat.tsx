@@ -51,11 +51,9 @@ export default function HistoryChat({
   onSendMessage,
   isTimeUp,
 }: HistoryChatProps) {
-  const [draft, setDraft] = React.useState("")
 
-  const handleSend = () => {
-    const content = draft.trim()
-
+const handleSend = React.useCallback(
+  (content: string) => {
     if (!content || isTimeUp) return
 
     onSendMessage({
@@ -65,8 +63,9 @@ export default function HistoryChat({
       avatarSrc: "/avatars/10.png",
       avatarFallback: "R",
     })
-    setDraft("")
-  }
+  },
+  [isTimeUp, onSendMessage]
+)
 
   const groups = groupMessages(messages)
 

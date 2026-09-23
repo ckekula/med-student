@@ -96,7 +96,9 @@ export function ChatComposer({ isTimeUp, onSend }: ChatComposerProps) {
         ) : (
           <Select
             value={examinationId}
-            onValueChange={setExaminationId}
+            onValueChange={(value) => {
+              if (value !== null) {setExaminationId(value)}
+            }}
             disabled={isTimeUp}
           >
             <SelectTrigger className="h-11 flex-1" aria-label="Examination">

@@ -53,7 +53,7 @@ export default function Timer({
           disabled={!canDecrease}
           onClick={onDecrease}
         >
-          <LuMinus className="size-4" />
+          <LuMinus className="size-4 cursor-pointer" />
         </AdjustButton>
 
         <div className="text-center">
@@ -77,7 +77,7 @@ export default function Timer({
           disabled={!canIncrease}
           onClick={onIncrease}
         >
-          <LuPlus className="size-4" />
+          <LuPlus className="size-4 cursor-pointer" />
         </AdjustButton>
       </div>
     </div>
