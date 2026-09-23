@@ -83,13 +83,13 @@ async def get_long_case(long_case_id: uuid.UUID, db: DbSession):
 
 
 @router.get("/{long_case_id}/details", response_model=LongCaseDetail)
-async def get_long_case_details(long_case_id: uuid.UUID, db: DbSession):
+async def get_long_case_details(long_case_id: uuid.UUID, db: DbSession, _user_id: CurrentUserId):
     stmt = (
         select(LongCase)
         .where(LongCase.id == long_case_id)
         .options(
             selectinload(LongCase.patient_profile),
-            selectinload(LongCase.historyItems),
+            selectinload(LongCase.history_items),
             selectinload(LongCase.examinations),
             selectinload(LongCase.investigations),
         )
@@ -101,7 +101,7 @@ async def get_long_case_details(long_case_id: uuid.UUID, db: DbSession):
     return LongCaseDetail(
         **LongCaseRead.model_validate(long_case).model_dump(),
         patient_profile=long_case.patient_profile,
-        history_items=long_case.historyItems,
+        history_items=long_case.history_items,
         examinations=long_case.examinations,
         investigations=long_case.investigations,
     )

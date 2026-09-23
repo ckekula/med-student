@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app.modules.osce.long_case_attempt.enums import *
 from app.modules.osce.schema import ORMBase
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 # LongCaseAttempt
@@ -20,7 +20,6 @@ class LongCaseAttemptUpdate(BaseModel):
     summary_completed_at: datetime | None = None
     evaluated_at: datetime | None = None
     total_score: float | None = None
-    passed: bool | None = None
 
 
 class LongCaseAttemptRead(ORMBase):
@@ -34,7 +33,6 @@ class LongCaseAttemptRead(ORMBase):
     summary_completed_at: datetime | None
     evaluated_at: datetime | None
     total_score: float | None
-    passed: bool | None
     created_at: datetime
     updated_at: datetime
 
@@ -54,9 +52,7 @@ class LongCaseAttemptMessageRead(ORMBase):
     updated_at: datetime
 
 
-# ---------------------------------------------------------------------------
 # LongCaseAttemptExaminationSelection — no update endpoint
-# ---------------------------------------------------------------------------
 class LongCaseAttemptExaminationSelectionCreate(BaseModel):
     query_text: str
     examination_id: uuid.UUID | None = None
@@ -100,3 +96,11 @@ class LongCaseAttemptHistoryResultRead(ORMBase):
     evaluated_at: datetime
     created_at: datetime
     updated_at: datetime
+
+class LongCaseAttemptChatRequest(BaseModel):
+    content: str = Field(..., min_length=1, max_length=4000)
+
+
+class LongCaseAttemptChatResponse(BaseModel):
+    user_message: LongCaseAttemptMessageRead
+    assistant_message: LongCaseAttemptMessageRead

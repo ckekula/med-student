@@ -1,8 +1,8 @@
-from backend.app.llm.base import ChatProvider
-from backend.app.llm.providers.claude_provider import ClaudeProvider
-from backend.app.llm.providers.gemini_provider import GeminiProvider
-from backend.app.llm.providers.huggingface_local import HuggingFaceLocalProvider
-from backend.app.llm.providers.openai_provider import OpenAIProvider
+from app.llm.base import ChatProvider
+from app.llm.providers.claude_provider import ClaudeProvider
+from app.llm.providers.gemini_provider import GeminiProvider
+from app.llm.providers.huggingface_local import HuggingFaceLocalProvider
+from app.llm.providers.openai_provider import OpenAIProvider
 
 
 class UnsupportedProviderError(ValueError):

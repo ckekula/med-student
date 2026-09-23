@@ -1,6 +1,8 @@
 import { apiRequest, apiRequestOrNull, type CallOptions, type GetToken } from "@/lib/api/client";
 import type {
   LongCaseAttempt,
+  LongCaseAttemptChatRequest,
+  LongCaseAttemptChatResponse,
   LongCaseAttemptCreate,
   LongCaseAttemptExaminationSelection,
   LongCaseAttemptExaminationSelectionCreate,
@@ -92,6 +94,31 @@ export function getMessageById(
   { signal }: CallOptions = {},
 ): Promise<LongCaseAttemptMessage | null> {
   return apiRequestOrNull<LongCaseAttemptMessage>(`${BASE_PATH}/${attemptId}/messages/${messageId}`, {
+    getToken,
+    signal,
+  });
+}
+
+/**
+ * Sends the student's message and returns both the saved user message and the
+ * LLM-generated patient reply. This calls an LLM server-side and can take
+ * several seconds — pass a `signal` with a generous timeout (or none) rather
+ * than the default used for quick CRUD calls elsewhere in this file.
+ *
+ * The user's message is persisted before the LLM is called, so on a 502 (LLM
+ * failure) it is not lost — the caller should surface a retry, which will
+ * post as a new message rather than duplicate the one already saved.
+ */
+export function sendChatMessage(
+  getToken: GetToken,
+  attemptId: string,
+  content: string,
+  { signal }: CallOptions = {},
+): Promise<LongCaseAttemptChatResponse> {
+  const body: LongCaseAttemptChatRequest = { content };
+  return apiRequest<LongCaseAttemptChatResponse>(`${BASE_PATH}/${attemptId}/messages/chat`, {
+    method: "POST",
+    body,
     getToken,
     signal,
   });

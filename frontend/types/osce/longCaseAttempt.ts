@@ -1,7 +1,7 @@
 // TODO: replace with the values of the backend enums.
-export type AttemptStatus = string;
-export type MessageSender = string;
-export type EvaluationMethod = string;
+export type AttemptStatus = "not_started" | "in_progress" | "completed" | "evaluated";
+export type MessageSender = "student" | "system";
+export type EvaluationMethod = "manual" | "automated";
 
 // Entities (field names mirror the backend's snake_case responses)
 export interface LongCaseAttempt {
@@ -75,6 +75,16 @@ export interface LongCaseAttemptMessageCreate {
 export interface LongCaseAttemptExaminationSelectionCreate {
   query_text: string;
   examination_id?: string | null;
+}
+
+export interface LongCaseAttemptChatRequest {
+  content: string;
+}
+ 
+/** Response of POST /long-case-attempts/{attempt_id}/messages/chat */
+export interface LongCaseAttemptChatResponse {
+  user_message: LongCaseAttemptMessage;
+  assistant_message: LongCaseAttemptMessage;
 }
 
 // Query params

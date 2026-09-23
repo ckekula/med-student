@@ -1,8 +1,10 @@
 import uuid
 from datetime import UTC, datetime
 
-from app.dependencies import CurrentDbUser, DbSession
+from app.dependencies import AdminUser, CurrentDbUser, DbSession
 from app.modules.osce.long_case.models import LongCase
+from app.modules.osce.long_case_attempt.enums import MessageSender
+from app.modules.osce.long_case_attempt.llm_chat import generate_patient_reply
 from app.modules.osce.long_case_attempt.models import (
     LongCaseAttempt,
     LongCaseAttemptExaminationSelection,
@@ -10,6 +12,8 @@ from app.modules.osce.long_case_attempt.models import (
     LongCaseAttemptMessage,
 )
 from app.modules.osce.long_case_attempt.schema import (
+    LongCaseAttemptChatRequest,
+    LongCaseAttemptChatResponse,
     LongCaseAttemptCreate,
     LongCaseAttemptExaminationSelectionCreate,
     LongCaseAttemptExaminationSelectionRead,
@@ -21,9 +25,10 @@ from app.modules.osce.long_case_attempt.schema import (
     LongCaseAttemptRead,
     LongCaseAttemptUpdate,
 )
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, logger, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/long-case-attempts", tags=["Long Case Attempts"])
 
@@ -94,8 +99,8 @@ async def update_attempt(attempt_id: uuid.UUID, payload: LongCaseAttemptUpdate, 
 
 
 @router.delete("/{attempt_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_attempt(attempt_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
-    attempt = await _get_own_attempt_or_404(db, user, attempt_id)
+async def delete_attempt(attempt_id: uuid.UUID, db: DbSession, admin: AdminUser):
+    attempt = await _get_own_attempt_or_404(db, admin, attempt_id)
     await db.delete(attempt)
     await db.commit()
 
@@ -133,8 +138,8 @@ async def get_message(attempt_id: uuid.UUID, message_id: uuid.UUID, db: DbSessio
 
 
 @router.delete("/{attempt_id}/messages/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_message(attempt_id: uuid.UUID, message_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
-    await _get_own_attempt_or_404(db, user, attempt_id)
+async def delete_message(attempt_id: uuid.UUID, message_id: uuid.UUID, db: DbSession, admin: AdminUser):
+    await _get_own_attempt_or_404(db, admin, attempt_id)
     message = await _get_nested_or_404(db, LongCaseAttemptMessage, attempt_id, message_id)
     await db.delete(message)
     await db.commit()
@@ -173,8 +178,8 @@ async def get_examination_log(attempt_id: uuid.UUID, log_id: uuid.UUID, db: DbSe
 
 
 @router.delete("/{attempt_id}/examination-selections/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_examination_log(attempt_id: uuid.UUID, log_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
-    await _get_own_attempt_or_404(db, user, attempt_id)
+async def delete_examination_log(attempt_id: uuid.UUID, log_id: uuid.UUID, db: DbSession, admin: AdminUser):
+    await _get_own_attempt_or_404(db, admin, attempt_id)
     log = await _get_nested_or_404(db, LongCaseAttemptExaminationSelection, attempt_id, log_id)
     await db.delete(log)
     await db.commit()
@@ -234,8 +239,68 @@ async def update_history_result(
 
 
 @router.delete("/{attempt_id}/history-results/{result_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_history_result(attempt_id: uuid.UUID, result_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
-    await _get_own_attempt_or_404(db, user, attempt_id)
+async def delete_history_result(attempt_id: uuid.UUID, result_id: uuid.UUID, db: DbSession, admin: AdminUser):
+    await _get_own_attempt_or_404(db, admin, attempt_id)
     result_row = await _get_nested_or_404(db, LongCaseAttemptHistoryResult, attempt_id, result_id)
     await db.delete(result_row)
     await db.commit()
+
+async def _get_long_case_with_chat_context_or_404(db: DbSession, long_case_id: uuid.UUID) -> LongCase:
+    stmt = (
+        select(LongCase)
+        .where(LongCase.id == long_case_id)
+        .options(
+            selectinload(LongCase.patient_profile),
+            selectinload(LongCase.historyItems),
+            selectinload(LongCase.investigations),
+        )
+    )
+    result = await db.execute(stmt)
+    long_case = result.scalar_one_or_none()
+    if long_case is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Long case not found")
+    return long_case
+
+
+@router.post(
+    "/{attempt_id}/messages/chat",
+    response_model=LongCaseAttemptChatResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def send_chat_message(
+    attempt_id: uuid.UUID, payload: LongCaseAttemptChatRequest, db: DbSession, user: CurrentDbUser
+):
+    attempt = await _get_own_attempt_or_404(db, user, attempt_id)
+    if attempt.history_completed_at is not None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "History taking has already been completed for this attempt")
+
+    long_case = await _get_long_case_with_chat_context_or_404(db, attempt.long_case_id)
+
+    # Persist the student's message first so it's never lost, even if the LLM call below fails.
+    user_message = LongCaseAttemptMessage(attempt_id=attempt_id, sender=MessageSender.STUDENT, content=payload.content)
+    db.add(user_message)
+    await db.commit()
+    await db.refresh(user_message)
+
+    history_result = await db.execute(
+        select(LongCaseAttemptMessage)
+        .where(LongCaseAttemptMessage.attempt_id == attempt_id)
+        .order_by(LongCaseAttemptMessage.created_at)
+    )
+    history = history_result.scalars().all()
+
+    try:
+        reply_content = await generate_patient_reply(long_case, history)
+    except Exception as exc:
+        logger.exception("Patient chat LLM generation failed for attempt %s", attempt_id)
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "Failed to generate a reply. Your message was saved — please try sending again.",
+        ) from exc
+
+    assistant_message = LongCaseAttemptMessage(attempt_id=attempt_id, sender=MessageSender.PATIENT, content=reply_content)
+    db.add(assistant_message)
+    await db.commit()
+    await db.refresh(assistant_message)
+
+    return LongCaseAttemptChatResponse(user_message=user_message, assistant_message=assistant_message)

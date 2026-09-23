@@ -200,6 +200,15 @@ class DifferentialDiagnosis(Base):
 # 4. 
 # 5. 
 
+## history / examination / summary - 30
+
+
+## discussion - 70
+# question
+# answer
+# ground truth
+
+
 ## short case
 
 # medicine

@@ -1,8 +1,8 @@
 from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from backend.app.config import get_settings
-from backend.app.llm.base import ChatProvider
+from app.config import get_settings
+from app.llm.base import ChatProvider
 
 settings = get_settings()
 
