@@ -1,6 +1,8 @@
 import uuid
 
 from app.dependencies import AdminUser, CurrentUserId, DbSession
+from app.modules.osce.long_case import service
+from app.modules.osce.long_case.enums import Specialty
 from app.modules.osce.long_case.models import (
     HistoryItem,
     LongCase,
@@ -22,13 +24,14 @@ from app.modules.osce.long_case.schema import (
     LongCaseInvestigationUpdate,
     LongCaseRead,
     LongCaseUpdate,
+    LongCaseWrite,
     PatientProfileCreate,
     PatientProfileRead,
     PatientProfileUpdate,
 )
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter(prefix="/long-cases", tags=["Long Cases"])
 
@@ -48,6 +51,22 @@ async def _get_nested_or_404(db: DbSession, model, long_case_id: uuid.UUID, item
     return item
 
 
+def _to_detail(long_case: LongCase) -> LongCaseDetail:
+    """Child collections have no ORDER BY, so sort here to keep the order stable between requests."""
+
+    def by_created(item):
+        return (item.created_at, item.id)
+
+    return LongCaseDetail(
+        **LongCaseRead.model_validate(long_case).model_dump(),
+        patient_profile=long_case.patient_profile,
+        history_items=sorted(long_case.history_items, key=by_created),
+        examinations=sorted(long_case.examinations, key=by_created),
+        investigations=sorted(long_case.investigations, key=by_created),
+        differential_diagnoses=sorted(long_case.differential_diagnoses, key=lambda d: d.priority),
+    )
+
+
 # LongCase
 @router.post("", response_model=LongCaseRead, status_code=status.HTTP_201_CREATED)
 async def create_long_case(payload: LongCaseCreate, db: DbSession, _admin: AdminUser):
@@ -58,10 +77,18 @@ async def create_long_case(payload: LongCaseCreate, db: DbSession, _admin: Admin
     return long_case
 
 
+@router.post("/full", response_model=LongCaseDetail, status_code=status.HTTP_201_CREATED)
+async def create_long_case_with_details(payload: LongCaseWrite, db: DbSession, _admin: AdminUser):
+    """Creates a long case together with its patient profile, history, examinations,
+    investigations and differential diagnoses in one transaction."""
+    long_case = await service.create_long_case(db, payload)
+    return _to_detail(long_case)
+
+
 @router.get("", response_model=list[LongCaseRead])
 async def list_long_cases(
     db: DbSession,
-    specialty: str | None = None,
+    specialty: Specialty | None = None,
     is_active: bool | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
@@ -71,7 +98,7 @@ async def list_long_cases(
         stmt = stmt.where(LongCase.specialty == specialty)
     if is_active is not None:
         stmt = stmt.where(LongCase.is_active == is_active)
-    stmt = stmt.offset(skip).limit(limit)
+    stmt = stmt.order_by(LongCase.created_at.desc(), LongCase.id).offset(skip).limit(limit)
     result = await db.execute(stmt)
     return result.scalars().all()
 
@@ -84,27 +111,20 @@ async def get_long_case(long_case_id: uuid.UUID, db: DbSession):
 
 @router.get("/{long_case_id}/details", response_model=LongCaseDetail)
 async def get_long_case_details(long_case_id: uuid.UUID, db: DbSession, _user_id: CurrentUserId):
-    stmt = (
-        select(LongCase)
-        .where(LongCase.id == long_case_id)
-        .options(
-            selectinload(LongCase.patient_profile),
-            selectinload(LongCase.history_items),
-            selectinload(LongCase.examinations),
-            selectinload(LongCase.investigations),
-        )
-    )
-    result = await db.execute(stmt)
-    long_case = result.scalar_one_or_none()
+    long_case = await service.load_long_case(db, long_case_id)
     if long_case is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Long case not found")
-    return LongCaseDetail(
-        **LongCaseRead.model_validate(long_case).model_dump(),
-        patient_profile=long_case.patient_profile,
-        history_items=long_case.history_items,
-        examinations=long_case.examinations,
-        investigations=long_case.investigations,
-    )
+    return _to_detail(long_case)
+
+
+@router.put("/{long_case_id}/details", response_model=LongCaseDetail)
+async def update_long_case_with_details(
+    long_case_id: uuid.UUID, payload: LongCaseWrite, db: DbSession, _admin: AdminUser
+):
+    """Updates a long case and syncs all child collections in one transaction:
+    children with an id are updated, without an id created, and omitted ones deleted."""
+    long_case = await service.update_long_case(db, long_case_id, payload)
+    return _to_detail(long_case)
 
 
 @router.patch("/{long_case_id}", response_model=LongCaseRead)
@@ -120,8 +140,15 @@ async def update_long_case(long_case_id: uuid.UUID, payload: LongCaseUpdate, db:
 @router.delete("/{long_case_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_long_case(long_case_id: uuid.UUID, db: DbSession, _admin: AdminUser):
     long_case = await _get_long_case_or_404(db, long_case_id)
-    await db.delete(long_case)
-    await db.commit()
+    try:
+        await db.delete(long_case)
+        await db.commit()
+    except IntegrityError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "This long case has attempts and can't be deleted. Deactivate it instead.",
+        ) from exc
 
 
 # PatientProfile — singleton per long case
