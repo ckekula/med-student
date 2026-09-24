@@ -115,7 +115,7 @@ class LongCaseExamination(Base):
     long_case_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False
     )
-    name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName), nullable=False)
+    name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName, name="examination_name"), nullable=False)
     findings: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
 

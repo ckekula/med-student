@@ -163,7 +163,7 @@ async def create_examination_log(
 
 
 @router.get("/{attempt_id}/examination-selections", response_model=list[LongCaseAttemptExaminationSelectionRead])
-async def list_examination_logs(attempt_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
+async def list_examination_selections(attempt_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
     await _get_own_attempt_or_404(db, user, attempt_id)
     result = await db.execute(
         select(LongCaseAttemptExaminationSelection).where(LongCaseAttemptExaminationSelection.attempt_id == attempt_id)

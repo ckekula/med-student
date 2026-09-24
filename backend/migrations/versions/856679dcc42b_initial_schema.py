@@ -1,8 +1,8 @@
 """initial schema
 
-Revision ID: 9402862d137c
+Revision ID: 856679dcc42b
 Revises: 
-Create Date: 2026-09-23 11:56:11.983674
+Create Date: 2026-09-24 06:40:06.812286
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '9402862d137c'
+revision: str = '856679dcc42b'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,13 +24,10 @@ def upgrade() -> None:
     op.create_table('long_cases',
     sa.Column('title', sa.String(length=255), nullable=False),
     sa.Column('specialty', sa.Enum('MEDICINE', 'SURGERY', 'PAEDIATRICS', 'GYNOBS', 'PSYCHIATRY', name='specialty'), nullable=False),
-    sa.Column('category', sa.Enum('ACUTE_FEVER', 'PROLONGED_FEVER_PUO', 'DIABETES_MELLITUS', 'HYPERTENSION', 'CHEST_PAIN', 'SHORTNESS_OF_BREATH', 'FEVER_WITH_RESPIRATORY_SYMPTOMS_RTI', 'CHRONIC_COUGH_AND_HEMOPTYSIS', 'SWELLING_OF_THE_BODY_EDEMA', 'JAUNDICE', 'CLCD', 'JOINT_PAIN', 'BLEEDING_DISORDERS', 'CHRONIC_KIDNEY_DISEASE', 'LOWER_LIMB_WEAKNESS', 'HEMIPARESIS', 'CONNECTIVE_TISSUE_DISEASE', 'ANEMIA', 'STROKE', 'CHRONIC_DIARRHEA', 'THYROID_DISORDERS', 'BREAST_CARCINOMA', 'UPPER_GASTROENTEROLOGY', 'HEPATOPANCREATOBILIARY', 'COLORECTAL', 'VASCULAR', 'UROLOGY', 'DEPRESSION', 'ANXIETY_DISORDERS', 'PSYCHOSIS', 'BIPOLAR_DISORDER', 'SUBSTANCE_USE_DISORDERS', 'NEONATAL_DISORDERS', 'INFECTIOUS_DISEASES', 'RESPIRATORY_DISORDERS', 'GASTROINTESTINAL_DISORDERS', 'NEUROLOGICAL_DISORDERS', 'OBSTETRIC_COMPLICATIONS', 'GYNECOLOGICAL_DISORDERS', 'REPRODUCTIVE_HEALTH_ISSUES', name='longcasecategory'), nullable=True),
-    sa.Column('difficulty', sa.Enum('EASY', 'MODERATE', 'HARD', name='difficultylevel'), nullable=False),
+    sa.Column('category', sa.Enum('ACUTE_FEVER', 'PROLONGED_FEVER_PUO', 'DIABETES_MELLITUS', 'HYPERTENSION', 'CHEST_PAIN', 'SHORTNESS_OF_BREATH', 'FEVER_WITH_RESPIRATORY_SYMPTOMS_RTI', 'CHRONIC_COUGH_AND_HEMOPTYSIS', 'SWELLING_OF_THE_BODY_EDEMA', 'JAUNDICE', 'CLCD', 'JOINT_PAIN', 'BLEEDING_DISORDERS', 'CHRONIC_KIDNEY_DISEASE', 'LOWER_LIMB_WEAKNESS', 'HEMIPARESIS', 'CONNECTIVE_TISSUE_DISEASE', 'ANEMIA', 'STROKE', 'CHRONIC_DIARRHEA', 'THYROID_DISORDERS', 'BREAST_CARCINOMA', 'UPPER_GASTROENTEROLOGY', 'HEPATOPANCREATOBILIARY', 'COLORECTAL', 'VASCULAR', 'UROLOGY', 'DEPRESSION', 'ANXIETY_DISORDERS', 'PSYCHOSIS', 'BIPOLAR_DISORDER', 'SUBSTANCE_USE_DISORDERS', 'NEONATAL_DISORDERS', 'INFECTIOUS_DISEASES', 'RESPIRATORY_DISORDERS', 'GASTROINTESTINAL_DISORDERS', 'NEUROLOGICAL_DISORDERS', 'OBSTETRIC_COMPLICATIONS', 'GYNECOLOGICAL_DISORDERS', 'REPRODUCTIVE_HEALTH_ISSUES', name='longcasecategory'), nullable=False),
+    sa.Column('difficulty', sa.Enum('FINAL_MBBS', 'PG', name='difficultylevel'), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('time_limit_seconds', sa.Integer(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('differential_diagnoses', sa.ARRAY(sa.String()), nullable=False),
-    sa.Column('supporting_features', sa.ARRAY(sa.String()), nullable=True),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
@@ -55,11 +52,11 @@ def upgrade() -> None:
     sa.Column('long_case_id', sa.UUID(), nullable=False),
     sa.Column('category', sa.Enum('PC', 'HOPC', 'PMH', 'PSH', 'MEDICATION_HISTORY', 'ALLERGY_HISTORY', 'FAMILY_HISTORY', 'SOCIAL_HISTORY', 'ANTINATAL_HISTORY', 'BIRTH_HISTORY', 'DEVELOPMENTAL_HISTORY', 'NUTRITION_HISTORY', 'VACCINATION_HISTORY', 'PGH', 'POH', 'MENSTRUAL_HISTORY', name='historyitemcategory'), nullable=False),
     sa.Column('description', sa.Text(), nullable=False),
-    sa.Column('points', sa.Float(), nullable=False),
-    sa.Column('is_critical', sa.Boolean(), nullable=False),
+    sa.Column('points', sa.Numeric(precision=3, scale=0), nullable=False),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.CheckConstraint('points >= 0', name='ck_history_items_points_non_negative'),
     sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -68,49 +65,63 @@ def upgrade() -> None:
     op.create_table('long_case_attempts',
     sa.Column('student_id', sa.UUID(), nullable=False),
     sa.Column('long_case_id', sa.UUID(), nullable=False),
-    sa.Column('status', sa.Enum('NOT_STARTED', 'IN_PROGRESS_HISTORY', 'HISTORY_COMPLETE', 'IN_PROGRESS_EXAMINATION', 'EXAMINATION_COMPLETE', 'SUMMARY_COMPLETE', 'EVALUATED', name='attemptstatus'), nullable=False),
-    sa.Column('started_at', sa.DateTime(), nullable=False),
-    sa.Column('history_completed_at', sa.DateTime(), nullable=True),
-    sa.Column('examination_completed_at', sa.DateTime(), nullable=True),
-    sa.Column('summary_completed_at', sa.DateTime(), nullable=True),
-    sa.Column('evaluated_at', sa.DateTime(), nullable=True),
-    sa.Column('total_score', sa.Float(), nullable=True),
-    sa.Column('passed', sa.Boolean(), nullable=True),
+    sa.Column('status', sa.Enum('IN_PROGRESS_HISTORY', 'HISTORY_COMPLETE', 'IN_PROGRESS_EXAMINATION', 'EXAMINATION_COMPLETE', 'SUMMARY_COMPLETE', 'EVALUATED', name='attemptstatus'), nullable=False),
+    sa.Column('started_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('history_completed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('examination_completed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('summary_completed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('evaluated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('total_score', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='CASCADE'),
+    sa.CheckConstraint('total_score >= 0', name='ck_long_case_attempts_total_score_non_negative'),
+    sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='RESTRICT'),
     sa.ForeignKeyConstraint(['student_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('student_id', 'long_case_id', name='uq_student_long_case_attempt')
     )
     op.create_index(op.f('ix_long_case_attempts_long_case_id'), 'long_case_attempts', ['long_case_id'], unique=False)
     op.create_index(op.f('ix_long_case_attempts_status'), 'long_case_attempts', ['status'], unique=False)
-    op.create_index(op.f('ix_long_case_attempts_student_id'), 'long_case_attempts', ['student_id'], unique=False)
-    op.create_table('long_case_examinations',
+    op.create_table('long_case_differential_diagnoses',
     sa.Column('long_case_id', sa.UUID(), nullable=False),
-    sa.Column('name', sa.Enum('GENERAL_EXAMINATION', 'SYSTEMIC_EXAMINATION', name='examinationname'), nullable=False),
-    sa.Column('findings', sa.Text(), nullable=False),
-    sa.Column('points', sa.Float(), nullable=False),
+    sa.Column('diagnosis', sa.String(length=255), nullable=False),
+    sa.Column('supporting_features', sa.ARRAY(sa.String()), nullable=False),
+    sa.Column('priority', sa.Integer(), nullable=False),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.CheckConstraint('priority >= 1', name='ck_long_case_differential_diagnoses_priority_positive'),
     sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('long_case_id', 'priority', name='uq_long_case_differential_diagnosis_priority')
     )
-    op.create_index(op.f('ix_long_case_examinations_long_case_id'), 'long_case_examinations', ['long_case_id'], unique=False)
+    op.create_table('long_case_examinations',
+    sa.Column('long_case_id', sa.UUID(), nullable=False),
+    sa.Column('name', sa.Enum('GENERAL_EXAMINATION', 'SYSTEMIC_EXAMINATION', name='examination_name'), nullable=False),
+    sa.Column('findings', sa.Text(), nullable=False),
+    sa.Column('points', sa.Numeric(precision=3, scale=0), nullable=False),
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.CheckConstraint('points >= 0', name='ck_long_case_examinations_points_non_negative'),
+    sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('long_case_id', 'name', name='uq_long_case_examination_name')
+    )
     op.create_table('long_case_investigations',
     sa.Column('long_case_id', sa.UUID(), nullable=False),
     sa.Column('name', sa.Enum('FBC', 'XRAY', 'CT', name='investigationname'), nullable=False),
     sa.Column('findings', sa.Text(), nullable=False),
-    sa.Column('points', sa.Float(), nullable=False),
+    sa.Column('points', sa.Numeric(precision=3, scale=0), nullable=False),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.CheckConstraint('points >= 0', name='ck_long_case_investigations_points_non_negative'),
     sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('long_case_id', 'name', name='uq_long_case_investigation_name')
     )
-    op.create_index(op.f('ix_long_case_investigations_long_case_id'), 'long_case_investigations', ['long_case_id'], unique=False)
     op.create_table('patient_profiles',
     sa.Column('long_case_id', sa.UUID(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=True),
@@ -126,40 +137,36 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['long_case_id'], ['long_cases.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('long_case_id', 'id', name='uq_case_patient_profile')
+    sa.UniqueConstraint('long_case_id')
     )
-    op.create_index(op.f('ix_patient_profiles_long_case_id'), 'patient_profiles', ['long_case_id'], unique=False)
     op.create_table('long_case_attempt_checklist_results',
     sa.Column('attempt_id', sa.UUID(), nullable=False),
     sa.Column('history_item_id', sa.UUID(), nullable=False),
     sa.Column('is_met', sa.Boolean(), nullable=False),
-    sa.Column('score_awarded', sa.Float(), nullable=False),
+    sa.Column('score_awarded', sa.Numeric(precision=3, scale=0), nullable=False),
     sa.Column('evaluation_method_used', sa.Enum('STRING_MATCH', 'LLM_JUDGE', name='evaluationmethod'), nullable=False),
     sa.Column('judge_reasoning', sa.Text(), nullable=True),
-    sa.Column('evaluated_at', sa.DateTime(), nullable=False),
+    sa.Column('evaluated_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.CheckConstraint('score_awarded >= 0', name='ck_attempt_checklist_results_score_non_negative'),
     sa.ForeignKeyConstraint(['attempt_id'], ['long_case_attempts.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['history_item_id'], ['history_items.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['history_item_id'], ['history_items.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('attempt_id', 'history_item_id', name='uq_attempt_checklist_item')
     )
-    op.create_index(op.f('ix_long_case_attempt_checklist_results_attempt_id'), 'long_case_attempt_checklist_results', ['attempt_id'], unique=False)
     op.create_index(op.f('ix_long_case_attempt_checklist_results_history_item_id'), 'long_case_attempt_checklist_results', ['history_item_id'], unique=False)
-    op.create_table('long_case_attempt_examination_logs',
+    op.create_table('long_case_attempt_examination_selections',
     sa.Column('attempt_id', sa.UUID(), nullable=False),
-    sa.Column('query_text', sa.String(length=255), nullable=False),
-    sa.Column('examination_id', sa.UUID(), nullable=True),
+    sa.Column('examination_name', sa.Enum('GENERAL_EXAMINATION', 'SYSTEMIC_EXAMINATION', name='examination_name'), nullable=False),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['attempt_id'], ['long_case_attempts.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['examination_id'], ['long_case_examinations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('attempt_id', 'examination_name', name='uq_attempt_examination_name')
     )
-    op.create_index(op.f('ix_long_case_attempt_examination_logs_attempt_id'), 'long_case_attempt_examination_logs', ['attempt_id'], unique=False)
-    op.create_index(op.f('ix_long_case_attempt_examination_logs_examination_id'), 'long_case_attempt_examination_logs', ['examination_id'], unique=False)
     op.create_table('long_case_attempt_messages',
     sa.Column('attempt_id', sa.UUID(), nullable=False),
     sa.Column('sender', sa.Enum('STUDENT', 'PATIENT', name='messagesender'), nullable=False),
@@ -179,19 +186,13 @@ def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_index(op.f('ix_long_case_attempt_messages_attempt_id'), table_name='long_case_attempt_messages')
     op.drop_table('long_case_attempt_messages')
-    op.drop_index(op.f('ix_long_case_attempt_examination_logs_examination_id'), table_name='long_case_attempt_examination_logs')
-    op.drop_index(op.f('ix_long_case_attempt_examination_logs_attempt_id'), table_name='long_case_attempt_examination_logs')
-    op.drop_table('long_case_attempt_examination_logs')
+    op.drop_table('long_case_attempt_examination_selections')
     op.drop_index(op.f('ix_long_case_attempt_checklist_results_history_item_id'), table_name='long_case_attempt_checklist_results')
-    op.drop_index(op.f('ix_long_case_attempt_checklist_results_attempt_id'), table_name='long_case_attempt_checklist_results')
     op.drop_table('long_case_attempt_checklist_results')
-    op.drop_index(op.f('ix_patient_profiles_long_case_id'), table_name='patient_profiles')
     op.drop_table('patient_profiles')
-    op.drop_index(op.f('ix_long_case_investigations_long_case_id'), table_name='long_case_investigations')
     op.drop_table('long_case_investigations')
-    op.drop_index(op.f('ix_long_case_examinations_long_case_id'), table_name='long_case_examinations')
     op.drop_table('long_case_examinations')
-    op.drop_index(op.f('ix_long_case_attempts_student_id'), table_name='long_case_attempts')
+    op.drop_table('long_case_differential_diagnoses')
     op.drop_index(op.f('ix_long_case_attempts_status'), table_name='long_case_attempts')
     op.drop_index(op.f('ix_long_case_attempts_long_case_id'), table_name='long_case_attempts')
     op.drop_table('long_case_attempts')

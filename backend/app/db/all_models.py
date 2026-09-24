@@ -3,6 +3,7 @@ Central import point so Alembic's autogenerate can see every model.
 """
 
 from app.modules.osce.long_case.models import (  # noqa: F401
+    DifferentialDiagnosis,
     HistoryItem,
     LongCase,
     LongCaseExamination,
@@ -11,7 +12,7 @@ from app.modules.osce.long_case.models import (  # noqa: F401
 )
 from app.modules.osce.long_case_attempt.models import (  # noqa: F401
     LongCaseAttempt,
-    LongCaseAttemptExaminationLog,
+    LongCaseAttemptExaminationSelection,
     LongCaseAttemptHistoryResult,
     LongCaseAttemptMessage,
 )
