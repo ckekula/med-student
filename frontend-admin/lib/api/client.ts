@@ -23,7 +23,7 @@ export class ApiError extends Error {
 export type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
 export interface RequestOptions {
-  method?: "GET" | "POST" | "PATCH";
+  method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   query?: QueryParams;
   body?: unknown;
   signal?: AbortSignal;
@@ -37,11 +37,14 @@ export interface CallOptions {
 }
 
 function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (!base) {
-    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+  const API_BASE_URL =
+  typeof window === "undefined"
+    ? (process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL)
+    : process.env.NEXT_PUBLIC_API_URL;
+  if (!API_BASE_URL) {
+    throw new Error("API_BASE_URL is not configured");
   }
-  return `${base.replace(/\/+$/, "")}/api/v1`;
+  return `${API_BASE_URL.replace(/\/+$/, "")}/api/v1`;
 }
 
 function buildUrl(path: string, query?: QueryParams): string {

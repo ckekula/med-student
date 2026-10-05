@@ -6,6 +6,7 @@ import type {
   LongCase,
   LongCaseDetail,
   LongCaseListParams,
+  LongCaseWritePayload,
   PatientProfile,
 } from "@/types/osce/longCase";
 
@@ -94,6 +95,60 @@ export function getInvestigationById(
   { signal }: CallOptions = {},
 ): Promise<Investigation | null> {
   return apiRequestOrNull<Investigation>(`${BASE_PATH}/${longCaseId}/investigations/${itemId}`, {
+    getToken,
+    signal,
+  });
+}
+
+// Admin endpoints
+
+export function createLongCase(
+  getToken: GetToken,
+  longCase: Partial<LongCase>,
+  { signal }: CallOptions = {},
+): Promise<LongCase> {
+  return apiRequest<LongCase>(BASE_PATH, { method: "POST", body: longCase, getToken, signal });
+}
+
+export function updateLongCase(
+  getToken: GetToken,
+  longCaseId: string,
+  longCase: Partial<LongCase>,
+  { signal }: CallOptions = {},
+): Promise<LongCase> {
+  return apiRequest<LongCase>(`${BASE_PATH}/${longCaseId}`, { method: "PATCH", body: longCase, getToken, signal });
+}
+
+export function deleteLongCase(
+  getToken: GetToken,
+  longCaseId: string,
+  { signal }: CallOptions = {},
+): Promise<void> {
+  return apiRequest<void>(`${BASE_PATH}/${longCaseId}`, { method: "DELETE", getToken, signal });
+}
+
+/** Atomically creates a long case together with its full details. */
+export function createLongCaseWithDetails(
+  getToken: GetToken,
+  payload: LongCaseWritePayload,
+  { signal }: CallOptions = {},
+): Promise<LongCaseDetail> {
+  return apiRequest<LongCaseDetail>(`${BASE_PATH}/full`, { method: "POST", body: payload, getToken, signal });
+}
+
+/**
+ * Atomically updates a long case and syncs its children:
+ * children with an `id` are updated, without an `id` created, and omitted ones deleted.
+ */
+export function updateLongCaseWithDetails(
+  getToken: GetToken,
+  longCaseId: string,
+  payload: LongCaseWritePayload,
+  { signal }: CallOptions = {},
+): Promise<LongCaseDetail> {
+  return apiRequest<LongCaseDetail>(`${BASE_PATH}/${longCaseId}/details`, {
+    method: "PUT",
+    body: payload,
     getToken,
     signal,
   });

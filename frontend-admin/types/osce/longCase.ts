@@ -1,27 +1,27 @@
-// Enums
-export type LongCaseSpecialty = 'Medicine' | 'Surgery' | 'Paediatrics' | 'GynObs' | 'Psychiatry';
-export type DifficultyLevel = 'Final MBBS' | 'Post Graduate';
-export type LongCaseCategory =
-  | 'Breast'
-  | 'Respiratory'
-  | 'Musculoskeletal'
-  | 'Neurological'
-  | 'Endocrine'
-  | 'Cardiovascular'
-  | 'Gastrointestinal'
-  | 'Obstretics'
-  | 'Psychiatric';
-export type ExaminationName = 'Physical' | 'Neurological' | 'Respiratory' | 'Cardiovascular' | 'Gastrointestinal';
+import type {
+  DifficultyLevel,
+  ExaminationName,
+  HistoryItemCategory,
+  InvestigationName,
+  LongCaseCategory,
+  LongCaseSpecialty,
+} from "@/lib/osce/longCaseOptions";
 
-// TODO: replace with the values of the backend enums.
-export type HistoryItemCategory = string;
-export type InvestigationName = string;
+// Enums live in `@/lib/osce/longCaseOptions` (single source of truth); re-exported for existing imports.
+export type {
+  DifficultyLevel,
+  ExaminationName,
+  HistoryItemCategory,
+  InvestigationName,
+  LongCaseCategory,
+  LongCaseSpecialty,
+};
 
 export interface LongCase {
   id: string;
   title: string;
   specialty: LongCaseSpecialty;
-  category: LongCaseCategory | null;
+  category: LongCaseCategory; // NOT NULL in the database
   difficulty: DifficultyLevel;
   description: string | null;
   is_active: boolean;
@@ -100,4 +100,27 @@ export interface LongCaseListParams {
   is_active?: boolean;
   skip?: number;
   limit?: number;
+}
+
+// Write payloads (POST /long-cases/full, PUT /long-cases/{id}/details)
+
+type ServerFields = "id" | "long_case_id" | "created_at" | "updated_at";
+
+/** Child row on write: `id` present = update that row, absent = create it. */
+type ChildInput<T> = Omit<T, ServerFields> & { id?: string };
+
+export type PatientProfileInput = Omit<PatientProfile, ServerFields>;
+export type HistoryItemInput = ChildInput<HistoryItem>;
+export type ExaminationInput = ChildInput<Examination>;
+export type InvestigationInput = ChildInput<Investigation>;
+export type DifferentialDiagnosisInput = ChildInput<DifferentialDiagnosis>;
+
+export interface LongCaseWritePayload
+  extends Pick<LongCase, "title" | "specialty" | "category" | "difficulty" | "description" | "is_active"> {
+  patient_profile: PatientProfileInput | null;
+  history_items: HistoryItemInput[];
+  examinations: ExaminationInput[];
+  investigations: InvestigationInput[];
+  /** `priority` is 1-based and defines the order shown to students. */
+  differential_diagnoses: DifferentialDiagnosisInput[];
 }

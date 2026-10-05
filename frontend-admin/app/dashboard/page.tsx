@@ -1,11 +1,9 @@
-import SidebarNav from "@/components/sidebar";
 import { auth } from "@clerk/nextjs/server";
 
 export default async function DashboardPage() {
 	await auth.protect();
 
 	return (
-		<SidebarNav>
 			<section className="flex min-h-full w-full flex-col gap-8 rounded-tl-2xl border border-neutral-200 bg-white p-6 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
 				<div>
 					<p className="text-sm font-medium text-neutral-500">Overview</p>
@@ -20,6 +18,5 @@ export default async function DashboardPage() {
 					))}
 				</div>
 			</section>
-		</SidebarNav>
 	);
 }
