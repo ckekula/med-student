@@ -28,7 +28,7 @@ class LongCase(Base):
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     specialty: Mapped[Specialty] = mapped_column(Enum(Specialty), nullable=False, index=True)
-    category: Mapped[LongCaseCategory] = mapped_column(Enum(LongCaseCategory), nullable=False)
+    category: Mapped[LongCaseCategory] = mapped_column(Enum(LongCaseCategory, native_enum=False), nullable=False)
     difficulty: Mapped[DifficultyLevel] = mapped_column(
         Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.FINAL_MBBS
     )
@@ -70,7 +70,7 @@ class PatientProfile(Base):
     )
     name: Mapped[str | None] = mapped_column(String(100))
     age: Mapped[int | None] = mapped_column()
-    sex: Mapped[str | None] = mapped_column(String(20))
+    sex: Mapped[Sex] = mapped_column(Enum(Sex), nullable=False, default=Sex.MALE)
     occupation: Mapped[str | None] = mapped_column(String(150))
     location: Mapped[str | None] = mapped_column(String(150))
     marital_status: Mapped[str | None] = mapped_column(String(50))
@@ -93,7 +93,7 @@ class HistoryItem(Base):
         ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False, index=True
     )
     category: Mapped[HistoryItemCategory] = mapped_column(
-        Enum(HistoryItemCategory), nullable=False, index=True
+        Enum(HistoryItemCategory, native_enum=False), nullable=False, index=True
     )
     description: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
@@ -115,7 +115,7 @@ class LongCaseExamination(Base):
     long_case_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False
     )
-    name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName, name="examination_name"), nullable=False)
+    name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName, name="examination_name", native_enum=False), nullable=False)
     findings: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
 
@@ -136,7 +136,7 @@ class LongCaseInvestigation(Base):
     long_case_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False
     )
-    name: Mapped[InvestigationName] = mapped_column(Enum(InvestigationName), nullable=False)
+    name: Mapped[InvestigationName] = mapped_column(Enum(InvestigationName, native_enum=False), nullable=False)
     findings: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
 

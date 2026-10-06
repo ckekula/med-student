@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     CLERK_ISSUER: str = ""
     CLERK_AUTHORIZED_PARTIES: list[str] = []  # from Clerk Dashboard > API Keys > your key > Authorized Parties
     CLERK_WEBHOOK_SECRET: SecretStr = SecretStr("")  # from Clerk Dashboard > Webhooks > your endpoint > Signing Secret
+    CLERK_AUDIENCE: str = ""
 
     # LLM provider credentials
     OPENAI_API_KEY: SecretStr | None = None

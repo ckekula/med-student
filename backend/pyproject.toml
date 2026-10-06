@@ -15,6 +15,7 @@ dependencies = [
     "langchain-openai>=1.6.2",
     "llama-index>=0.14.24",
     "llama-parse>=0.6.94",
+    "mypy",
     "pyjwt>=2.14.0",
     "slowapi>=0.1.10",
     "sqlalchemy[asyncio]>=2.0.52",

@@ -101,7 +101,7 @@ class LongCaseAttemptExaminationSelection(Base):
     attempt_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_case_attempts.id", ondelete="CASCADE"), nullable=False
     )
-    examination_name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName, name="examination_name"), nullable=False)
+    examination_name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName, name="examination_name", native_enum=False), nullable=False)
  
     attempt: Mapped["LongCaseAttempt"] = relationship(back_populates="examination_selections")
 

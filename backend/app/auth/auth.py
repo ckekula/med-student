@@ -39,7 +39,7 @@ async def get_current_token_payload(
             algorithms=["RS256"],
             issuer=settings.CLERK_ISSUER or None,
             audience=settings.CLERK_AUDIENCE,
-            options={"verify_aud": settings.CLERK_AUDIENCE is not None},
+            options={"verify_aud": bool(settings.CLERK_AUDIENCE)},
         )
     except (jwt.PyJWTError, httpx.HTTPError) as exc:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, f"Invalid token: {exc}") from exc
@@ -66,6 +66,7 @@ async def require_org_admin(
 
     Use on content-management routes (long cases and their nested resources).
     """
-    if payload.get("org_role") != ADMIN_ORG_ROLE:
+    org = payload.get("o") or {}
+    if org.get("rol") != "admin":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin access required")
     return payload

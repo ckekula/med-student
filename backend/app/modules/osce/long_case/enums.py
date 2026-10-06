@@ -6,6 +6,7 @@ __all__ = [
     "HistoryItemCategory",
     "InvestigationName",
     "LongCaseCategory",
+    "Sex",
     "Specialty",
 ]
 
@@ -20,55 +21,55 @@ class Specialty(Enum):
 
 class LongCaseCategory(Enum):
     # medicine
-    ACUTE_FEVER = "Acute Fever"
-    PROLONGED_FEVER_PUO = "Prolonged fever/ PUO"
-    DIABETES_MELLITUS = "Diabetes mellitus"
-    HYPERTENSION = "Hypertension"
-    CHEST_PAIN = "Chest pain"
-    SHORTNESS_OF_BREATH = "Shortness of breath"
-    FEVER_WITH_RESPIRATORY_SYMPTOMS_RTI = "Fever with respiratory symptoms/ RTI"
-    CHRONIC_COUGH_AND_HEMOPTYSIS = "Chronic cough & hemoptysis"
-    SWELLING_OF_THE_BODY_EDEMA = "Swelling of the body / Edema"
-    JAUNDICE = "Jaundice"
+    ACUTE_FEVER = "acute_fever"
+    PROLONGED_FEVER_PUO = "prolonged_fever_PUO"
+    DIABETES_MELLITUS = "diabetes_mellitus"
+    HYPERTENSION = "hypertension"
+    CHEST_PAIN = "chest_pain"
+    SHORTNESS_OF_BREATH = "shortness_of_breath"
+    FEVER_WITH_RESPIRATORY_SYMPTOMS_RTI = "fever_with_respiratory_symptoms_RTI"
+    CHRONIC_COUGH_AND_HEMOPTYSIS = "chronic_cough_and_hemoptysis"
+    SWELLING_OF_THE_BODY_EDEMA = "swelling_of_the_body_edema"
+    JAUNDICE = "jaundice"
     CLCD = "CLCD"
-    JOINT_PAIN = "Joint pain"
-    BLEEDING_DISORDERS = "Bleeding disorders"
-    CHRONIC_KIDNEY_DISEASE = "Chronic kidney disease"
-    LOWER_LIMB_WEAKNESS = "Lower limb weakness"
-    HEMIPARESIS = "Hemiparesis"
-    CONNECTIVE_TISSUE_DISEASE = "Connective tissue disease"
-    ANEMIA = "Anemia"
-    STROKE = "Stroke"
-    CHRONIC_DIARRHEA = "Chronic diarrhea"
+    JOINT_PAIN = "joint_pain"
+    BLEEDING_DISORDERS = "bleeding_disorders"
+    CHRONIC_KIDNEY_DISEASE = "chronic_kidney_disease"
+    LOWER_LIMB_WEAKNESS = "lower_limb_weakness"
+    HEMIPARESIS = "hemiparesis"
+    CONNECTIVE_TISSUE_DISEASE = "connective_tissue_disease"
+    ANEMIA = "anemia"
+    STROKE = "stroke"
+    CHRONIC_DIARRHEA = "chronic_diarrhea"
     # Surgery
-    THYROID_DISORDERS = "Thyroid Disorders"
-    BREAST_CARCINOMA = "Breast Carcinoma"
-    UPPER_GASTROENTEROLOGY = "Upper Gastroenterology"
-    HEPATOPANCREATOBILIARY = "Hepatopancreatobiliary"
-    COLORECTAL = "Colorectal"
-    VASCULAR = "Vascular"
-    UROLOGY = "Urology"
+    THYROID_DISORDERS = "thyroid_disorders"
+    BREAST_CARCINOMA = "breast_carcinoma"
+    UPPER_GASTROENTEROLOGY = "upper_gastroenterology"
+    HEPATOPANCREATOBILIARY = "hepatopancreatobiliary"
+    COLORECTAL = "colorectal"
+    VASCULAR = "vascular"
+    UROLOGY = "urology"
     # Psychiatry
-    DEPRESSION = "Depression"
-    ANXIETY_DISORDERS = "Anxiety Disorders"
-    PSYCHOSIS = "Psychosis"
-    BIPOLAR_DISORDER = "Bipolar Disorder"
-    SUBSTANCE_USE_DISORDERS = "Substance Use Disorders"
+    DEPRESSION = "depression"
+    ANXIETY_DISORDERS = "anxiety_disorders"
+    PSYCHOSIS = "psychosis"
+    BIPOLAR_DISORDER = "bipolar_disorder"
+    SUBSTANCE_USE_DISORDERS = "substance_use_disorders"
     # Paediatrics
-    NEONATAL_DISORDERS = "Neonatal Disorders"
-    INFECTIOUS_DISEASES = "Infectious Diseases"
-    RESPIRATORY_DISORDERS = "Respiratory Disorders"
-    GASTROINTESTINAL_DISORDERS = "Gastrointestinal Disorders"
-    NEUROLOGICAL_DISORDERS = "Neurological Disorders"
+    NEONATAL_DISORDERS = "neonatal_disorders"
+    INFECTIOUS_DISEASES = "infectious_diseases"
+    RESPIRATORY_DISORDERS = "respiratory_disorders"
+    GASTROINTESTINAL_DISORDERS = "gastrointestinal_disorders"
+    NEUROLOGICAL_DISORDERS = "neurological_disorders"
     # GynObs
-    OBSTETRIC_COMPLICATIONS = "Obstetric Complications"
-    GYNECOLOGICAL_DISORDERS = "Gynecological Disorders"
-    REPRODUCTIVE_HEALTH_ISSUES = "Reproductive Health Issues"
+    OBSTETRIC_COMPLICATIONS = "obstetric_complications"
+    GYNECOLOGICAL_DISORDERS = "gynecological_disorders"
+    REPRODUCTIVE_HEALTH_ISSUES = "reproductive_health_issues"
 
 
 class ExaminationName(Enum):
-    GENERAL_EXAMINATION = "General Examination"
-    SYSTEMIC_EXAMINATION = "Systemic Examination"
+    GENERAL_EXAMINATION = "general_examination"
+    SYSTEMIC_EXAMINATION = "systemic_examination"
 
 
 class DifficultyLevel(Enum):
@@ -79,18 +80,18 @@ class DifficultyLevel(Enum):
 class HistoryItemCategory(Enum):
     PC = "presenting_complaint"
     HOPC = "history_of_presenting_complaint" # rules for obs
-    PMH = "past_medical_history"
-    PSH = "past_surgical_history"
+    PMH = "past medical_history"
+    PSH = "past surgical_history"
     MEDICATION_HISTORY = "medication_history"
     ALLERGY_HISTORY = "allergy_history"
     FAMILY_HISTORY = "family_history"
     SOCIAL_HISTORY = "social_history"
     # paediatrics
-    ANTINATAL_HISTORY = "antinatal history" # paed
-    BIRTH_HISTORY = "birth history" # paed
-    DEVELOPMENTAL_HISTORY = "developmental history" # paed
-    NUTRITION_HISTORY = "nutrition history" # paed
-    VACCINATION_HISTORY = "vaccination history" # paed
+    ANTINATAL_HISTORY = "antinatal_history" # paed
+    BIRTH_HISTORY = "birth_history" # paed
+    DEVELOPMENTAL_HISTORY = "developmental_history" # paed
+    NUTRITION_HISTORY = "nutrition_history" # paed
+    VACCINATION_HISTORY = "vaccination_history" # paed
     # gyn/obs
     PGH = "past_gynaecological_history" # gyn/obs
     POH = "past_obstetric_history" # obs/gyn
@@ -98,6 +99,10 @@ class HistoryItemCategory(Enum):
 
 
 class InvestigationName(Enum):
-    FBC = "Full Blood Count"
-    XRAY = "X Ray"
-    CT = "CT Scan"
+    FBC = "full_blood_count"
+    XRAY = "x_ray"
+    CT = "ct_scan"
+
+class Sex(Enum):
+    MALE = "male"
+    FEMALE = "female"
