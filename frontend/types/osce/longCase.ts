@@ -50,7 +50,6 @@ export interface HistoryItem {
   category: HistoryItemCategory;
   description: string;
   points: number;
-  is_critical: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -18,7 +18,7 @@ export function ExaminationsSection() {
   return (
     <RepeatableSection
       title="Examinations"
-      description="Findings revealed when a student performs each examination."
+      description=""
       addLabel="Add examination"
       onAdd={() => append(createEmptyExamination(getValues("examinations").map((item) => item.name)))}
       isEmpty={fields.length === 0}

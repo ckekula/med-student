@@ -1,10 +1,12 @@
 import type {
+  
   DifficultyLevel,
   ExaminationName,
   HistoryItemCategory,
   InvestigationName,
   LongCaseCategory,
   LongCaseSpecialty,
+  Sex,
 } from "@/lib/osce/longCaseOptions";
 
 // Enums live in `@/lib/osce/longCaseOptions` (single source of truth); re-exported for existing imports.
@@ -34,7 +36,7 @@ export interface PatientProfile {
   long_case_id: string;
   name: string | null;
   age: number | null;
-  sex: string | null;
+  sex: Sex | null;
   occupation: string | null;
   location: string | null;
   marital_status: string | null;
@@ -50,7 +52,6 @@ export interface HistoryItem {
   category: HistoryItemCategory;
   description: string;
   points: number;
-  is_critical: boolean;
   created_at: string;
   updated_at: string;
 }

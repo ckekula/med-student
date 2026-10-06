@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -115,11 +114,6 @@ export function LongCaseFormDialog({ mode, onClose, onSaved }: LongCaseFormDialo
       <DialogContent className="flex max-h-[90vh] flex-col gap-0 p-0 sm:max-w-3xl">
         <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle>{isEdit ? "Edit long case" : "New long case"}</DialogTitle>
-          <DialogDescription>
-            {isEdit
-              ? "Changes to the case and all of its details are saved together."
-              : "The case and all of its details are created together."}
-          </DialogDescription>
         </DialogHeader>
 
         <FormProvider {...form}>

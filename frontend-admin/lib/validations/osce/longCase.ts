@@ -6,6 +6,7 @@ import {
   INVESTIGATION_NAMES,
   LONG_CASE_CATEGORIES,
   LONG_CASE_SPECIALTIES,
+  SEX,
 } from "@/lib/osce/longCaseOptions";
 
 export const MAX_POINTS = 100;
@@ -43,7 +44,7 @@ export const patientProfileSchema = z.object({
     .min(0, "Age cannot be negative")
     .max(120, "Age cannot exceed 120")
     .nullable(),
-  sex: optionalText("Sex", 20),
+  sex: z.union([z.literal(""), z.enum(SEX)]),
   occupation: optionalText("Occupation", 150),
   location: optionalText("Location", 150),
   marital_status: optionalText("Marital status", 50),
@@ -64,7 +65,6 @@ export const historyItemSchema = z.object({
   category: z.enum(HISTORY_ITEM_CATEGORIES),
   description: requiredText("Description", 2000),
   points,
-  is_critical: z.boolean(),
 });
 
 export const examinationSchema = z.object({

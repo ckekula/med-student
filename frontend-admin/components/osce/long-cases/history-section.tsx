@@ -3,8 +3,6 @@
 import { useId } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { HISTORY_ITEM_CATEGORY_OPTIONS } from "@/lib/osce/longCaseOptions";
 import { createEmptyHistoryItem } from "@/lib/osce/longCaseMappers";
@@ -20,7 +18,7 @@ export function HistorySection() {
   return (
     <RepeatableSection
       title="History items"
-      description="Questions a student should ask. Mark the ones that are essential as critical."
+      description=""
       addLabel="Add history item"
       onAdd={() => append(createEmptyHistoryItem())}
       isEmpty={fields.length === 0}
@@ -81,16 +79,6 @@ function HistoryItemRow({ index, onRemove }: { index: number; onRemove: () => vo
         />
       </FormField>
 
-      <div className="flex items-center gap-2">
-        <Controller
-          control={control}
-          name={`history_items.${index}.is_critical`}
-          render={({ field }) => (
-            <Switch id={id("critical")} checked={field.value} onCheckedChange={field.onChange} />
-          )}
-        />
-        <Label htmlFor={id("critical")}>Critical item</Label>
-      </div>
     </ItemCard>
   );
 }

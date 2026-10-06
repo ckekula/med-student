@@ -1,15 +1,18 @@
 "use client";
 
 import { useId } from "react";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { SEX_OPTIONS } from "@/lib/osce/longCaseOptions";
 import type { LongCaseFormValues } from "@/lib/validations/osce/longCase";
 import { FormField, fieldA11y, toNullableNumber } from "./form-field";
+import { OptionSelect } from "./option-select";
 
 export function PatientSection() {
   const uid = useId();
   const id = (name: string) => `${uid}-${name}`;
   const {
+    control,
     register,
     formState: { errors },
   } = useFormContext<LongCaseFormValues>();
@@ -34,7 +37,20 @@ export function PatientSection() {
           />
         </FormField>
         <FormField id={id("sex")} label="Sex" error={profileErrors?.sex}>
-          <Input {...fieldA11y(id("sex"), profileErrors?.sex)} {...register("patient_profile.sex")} />
+          <Controller
+            control={control}
+            name="patient_profile.sex"
+            render={({ field }) => (
+              <OptionSelect
+                {...fieldA11y(id("sex"), profileErrors?.sex)}
+                value={field.value || null}
+                onChange={(value) => field.onChange(value ?? "")}
+                options={SEX_OPTIONS}
+                placeholder="Select sex"
+                emptyLabel="Not specified"
+              />
+            )}
+          />
         </FormField>
         <FormField id={id("marital")} label="Marital status" error={profileErrors?.marital_status}>
           <Input

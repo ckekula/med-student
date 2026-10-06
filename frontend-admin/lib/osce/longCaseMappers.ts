@@ -24,7 +24,6 @@ export const createEmptyHistoryItem = (): HistoryItemFormValues => ({
   category: HISTORY_ITEM_CATEGORIES[0],
   description: "",
   points: 1,
-  is_critical: false,
 });
 
 /** Names are unique per case, so a new row starts on the first name not used yet. */
@@ -55,8 +54,8 @@ export const createEmptyDifferential = (): DifferentialDiagnosisFormValues => ({
 export function createEmptyFormValues(): DefaultValues<LongCaseFormValues> {
   return {
     title: "",
-    specialty: "Medicine",
-    difficulty: "Final MBBS",
+    specialty: "medicine",
+    difficulty: "final_mbbs",
     description: "",
     // New cases start as drafts so they aren't visible to students half-finished.
     is_active: false,
@@ -104,7 +103,6 @@ export function toFormValues(detail: LongCaseDetail): LongCaseFormValues {
       category: item.category,
       description: item.description,
       points: item.points,
-      is_critical: item.is_critical,
     })),
     examinations: detail.examinations.map((item) => ({
       serverId: item.id,
@@ -142,7 +140,7 @@ function toPatientProfileInput(profile: PatientProfileFormValues): PatientProfil
   const input: PatientProfileInput = {
     name: blankToNull(profile.name),
     age: profile.age,
-    sex: blankToNull(profile.sex),
+    sex: profile.sex === "" ? null : profile.sex,
     occupation: blankToNull(profile.occupation),
     location: blankToNull(profile.location),
     marital_status: blankToNull(profile.marital_status),

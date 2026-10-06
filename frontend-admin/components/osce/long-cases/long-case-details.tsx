@@ -72,7 +72,6 @@ export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
                     <li key={item.id} className="flex items-start justify-between gap-3 text-sm">
                       <span className="whitespace-pre-wrap">{item.description}</span>
                       <span className="flex shrink-0 items-center gap-1.5">
-                        {item.is_critical && <Badge variant="destructive">Critical</Badge>}
                         <Badge variant="secondary">{formatPoints(item.points)}</Badge>
                       </span>
                     </li>

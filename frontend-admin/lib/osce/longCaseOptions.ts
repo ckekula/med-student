@@ -16,30 +16,38 @@ function buildOptions<T extends string>(
   return values.map((value) => ({ value, label: labels[value] }));
 }
 
+export const SEX = ["male", "female"] as const;
+export type Sex = (typeof SEX)[number];
+export const SEX_LABELS: Readonly<Record<Sex, string>> = {
+  male: "Male",
+  female: "Female",
+};
+export const SEX_OPTIONS = buildOptions(SEX, SEX_LABELS);
+
 // Specialty
-export const LONG_CASE_SPECIALTIES = ["Medicine", "Surgery", "Paediatrics", "GynObs", "Psychiatry"] as const;
+export const LONG_CASE_SPECIALTIES = ["medicine", "surgery", "paediatrics", "gynobs", "psychiatry"] as const;
 export type LongCaseSpecialty = (typeof LONG_CASE_SPECIALTIES)[number];
 export const SPECIALTY_LABELS: Readonly<Record<LongCaseSpecialty, string>> = {
-  Medicine: "Medicine",
-  Surgery: "Surgery",
-  Paediatrics: "Paediatrics",
-  GynObs: "Gynaecology & Obstetrics",
-  Psychiatry: "Psychiatry",
+  medicine: "Medicine",
+  surgery: "Surgery",
+  paediatrics: "Paediatrics",
+  gynobs: "Gynaecology & Obstetrics",
+  psychiatry: "Psychiatry",
 };
 export const SPECIALTY_OPTIONS = buildOptions(LONG_CASE_SPECIALTIES, SPECIALTY_LABELS);
 
 // Difficulty
-export const DIFFICULTY_LEVELS = ["Final MBBS", "Post Graduate"] as const;
+export const DIFFICULTY_LEVELS = ["final_mbbs", "post_graduate"] as const;
 export type DifficultyLevel = (typeof DIFFICULTY_LEVELS)[number];
 export const DIFFICULTY_LABELS: Readonly<Record<DifficultyLevel, string>> = {
-  "Final MBBS": "Final MBBS",
-  "Post Graduate": "Post Graduate",
+  "final_mbbs": "Final MBBS",
+  "post_graduate": "Post Graduate",
 };
 export const DIFFICULTY_OPTIONS = buildOptions(DIFFICULTY_LEVELS, DIFFICULTY_LABELS);
 
-// Category ("Obstretics" is the backend spelling; only the label is corrected)
+// Category
 export const LONG_CASE_CATEGORIES = [
-  "Breast",
+  "chest_pain",
   "Respiratory",
   "Musculoskeletal",
   "Neurological",
@@ -51,7 +59,7 @@ export const LONG_CASE_CATEGORIES = [
 ] as const;
 export type LongCaseCategory = (typeof LONG_CASE_CATEGORIES)[number];
 export const CATEGORY_LABELS: Readonly<Record<LongCaseCategory, string>> = {
-  Breast: "Breast",
+  chest_pain: "Chest Pain",
   Respiratory: "Respiratory",
   Musculoskeletal: "Musculoskeletal",
   Neurological: "Neurological",
