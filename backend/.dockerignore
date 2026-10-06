@@ -9,3 +9,4 @@ __pycache__
 Dockerfile
 compose.yaml
 README.md
+openapi.json

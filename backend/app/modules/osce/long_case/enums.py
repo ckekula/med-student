@@ -80,8 +80,8 @@ class DifficultyLevel(Enum):
 class HistoryItemCategory(Enum):
     PC = "presenting_complaint"
     HOPC = "history_of_presenting_complaint" # rules for obs
-    PMH = "past medical_history"
-    PSH = "past surgical_history"
+    PMH = "past_medical_history"
+    PSH = "past_surgical_history"
     MEDICATION_HISTORY = "medication_history"
     ALLERGY_HISTORY = "allergy_history"
     FAMILY_HISTORY = "family_history"

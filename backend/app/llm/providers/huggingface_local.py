@@ -1,8 +1,6 @@
 from functools import lru_cache
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 from app.config import get_settings
 from app.llm.base import ChatProvider
@@ -12,6 +10,9 @@ settings = get_settings()
 
 @lru_cache(maxsize=2)  # keep at most 2 local models resident at once (GPU memory permitting)
 def _load_pipeline(model_name: str, max_new_tokens: int):
+    from langchain_huggingface import HuggingFacePipeline
+    from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name, device_map=settings.HF_DEVICE)
     pipe = pipeline(
@@ -38,6 +39,8 @@ class HuggingFaceLocalProvider(ChatProvider):
     provider_name = "hf_local"
 
     def build(self, model_name: str, **kwargs) -> BaseChatModel:
+        from langchain_huggingface import ChatHuggingFace
+
         max_new_tokens = kwargs.pop("max_new_tokens", 512)
         llm = _load_pipeline(model_name, max_new_tokens)
         return ChatHuggingFace(llm=llm)
