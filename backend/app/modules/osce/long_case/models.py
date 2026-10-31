@@ -50,7 +50,7 @@ class LongCase(Base):
     differential_diagnoses: Mapped[list["DifferentialDiagnosis"]] = relationship(
         back_populates="long_case", cascade="all, delete-orphan"
     )
- 
+
     # Attempts are preserved: no ORM cascade, and the DB rejects deletion of a
     # case that has attempts (requires ondelete="RESTRICT" on the attempt FK).
     attempts: Mapped[list["LongCaseAttempt"]] = relationship(

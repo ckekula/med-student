@@ -25,9 +25,9 @@ class Settings(BaseSettings):
     # Postgres
     POSTGRES_HOST: str = "postgres"
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: SecretStr
-    POSTGRES_DB: str
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: SecretStr = SecretStr("postgres")
+    POSTGRES_DB: str = "postgres"
 
     @property
     def DATABASE_URL(self) -> URL:
