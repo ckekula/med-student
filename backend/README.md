@@ -11,3 +11,13 @@ docker compose exec backend alembic revision --autogenerate -m "initial schema"
 docker compose exec backend alembic upgrade head
 docker compose cp backend:/app/migrations/versions/. ./backend/migrations/versions/
 ```
+
+export openAPI:
+```bash
+cd backend
+python export_openapi.py
+cd ../frontend
+pnpm api:types
+cd ../frontend-admin
+pnpm api:types
+```

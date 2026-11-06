@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from app.db.base import Base
 from app.modules.osce.long_case.enums import *
 from sqlalchemy import (
-    ARRAY,
     Boolean,
     CheckConstraint,
     Enum,
@@ -83,7 +82,6 @@ class PatientProfile(Base):
 class HistoryItem(Base):
     """
     An expected history-taking point. Marked per-attempt as extracted or not.
-    Evaluated against the conversation transcript via string match or LLM judge.
     """
 
     __tablename__ = "history_items"
@@ -96,7 +94,7 @@ class HistoryItem(Base):
         Enum(HistoryItemCategory, native_enum=False), nullable=False, index=True
     )
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
+    points: Mapped[Decimal] = mapped_column(Numeric(2, 0), nullable=False, default=Decimal(100))
 
     long_case: Mapped["LongCase"] = relationship(back_populates="history_items")
 
@@ -117,7 +115,7 @@ class LongCaseExamination(Base):
     )
     name: Mapped[ExaminationName] = mapped_column(Enum(ExaminationName, name="examination_name", native_enum=False), nullable=False)
     findings: Mapped[str] = mapped_column(Text, nullable=False)
-    points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
+    points: Mapped[Decimal] = mapped_column(Numeric(2, 0), nullable=False, default=Decimal(100))
 
     long_case: Mapped["LongCase"] = relationship(back_populates="examinations")
 
@@ -138,7 +136,7 @@ class LongCaseInvestigation(Base):
     )
     name: Mapped[InvestigationName] = mapped_column(Enum(InvestigationName, native_enum=False), nullable=False)
     findings: Mapped[str] = mapped_column(Text, nullable=False)
-    points: Mapped[Decimal] = mapped_column(Numeric(3, 0), nullable=False, default=Decimal(100))
+    points: Mapped[Decimal] = mapped_column(Numeric(2, 0), nullable=False, default=Decimal(100))
 
     long_case: Mapped["LongCase"] = relationship(back_populates="investigations")
 
@@ -150,17 +148,16 @@ class DifferentialDiagnosis(Base):
     """
 
     __tablename__ = "long_case_differential_diagnoses"
-    __table_args__ = (
-        UniqueConstraint("long_case_id", "priority", name="uq_long_case_differential_diagnosis_priority"),
-        CheckConstraint("priority >= 1", name="ck_long_case_differential_diagnoses_priority_positive"),
-    )
 
     long_case_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False
     )
-    diagnosis: Mapped[str] = mapped_column(String(255), nullable=False)
-    supporting_features: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
-    priority: Mapped[int] = mapped_column(nullable=False, default=1)
+    primary_diagnosis: Mapped[str] = mapped_column(Text, nullable=False)
+    secondary_diagnosis: Mapped[str] = mapped_column(Text, nullable=True)
+    etiology: Mapped[str] = mapped_column(Text, nullable=True)
+    location_laterality: Mapped[str] = mapped_column(Text, nullable=True)
+    severity_stage: Mapped[str] = mapped_column(Text, nullable=True)
+    complications: Mapped[str] = mapped_column(Text, nullable=True)
 
     long_case: Mapped["LongCase"] = relationship(back_populates="differential_diagnoses")
 

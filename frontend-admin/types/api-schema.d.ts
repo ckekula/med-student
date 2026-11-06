@@ -406,15 +406,18 @@ export interface components {
         AttemptStatus: "in_progress_history" | "history_complete" | "in_progress_examination" | "examination_complete" | "summary_complete" | "evaluated";
         /** DifferentialDiagnosisRead */
         DifferentialDiagnosisRead: {
-            /** Diagnosis */
-            diagnosis: string;
-            /** Supporting Features */
-            supporting_features?: string[];
-            /**
-             * Priority
-             * @default 1
-             */
-            priority: number;
+            /** Primary Diagnosis */
+            primary_diagnosis: string;
+            /** Secondary Diagnosis */
+            secondary_diagnosis?: string | null;
+            /** Etiology */
+            etiology: string;
+            /** Location Laterality */
+            location_laterality: string;
+            /** Severity Stage */
+            severity_stage: string;
+            /** Complications */
+            complications?: string | null;
             /**
              * Id
              * Format: uuid
@@ -440,12 +443,18 @@ export interface components {
         DifferentialDiagnosisWrite: {
             /** Id */
             id?: string | null;
-            /** Diagnosis */
-            diagnosis: string;
-            /** Supporting Features */
-            supporting_features?: string[];
-            /** Priority */
-            priority: number;
+            /** Primary Diagnosis */
+            primary_diagnosis: string;
+            /** Secondary Diagnosis */
+            secondary_diagnosis: string;
+            /** Etiology */
+            etiology: string;
+            /** Location Laterality */
+            location_laterality: string;
+            /** Severity Stage */
+            severity_stage: string;
+            /** Complications */
+            complications: string;
         };
         /**
          * DifficultyLevel
@@ -461,7 +470,7 @@ export interface components {
          * ExaminationName
          * @enum {string}
          */
-        ExaminationName: "general_examination" | "systemic_examination";
+        ExaminationName: "tendon_xanthomas" | "peripheral_embolic_stigmata" | "pulses" | "clubbing" | "buergers_test" | "capillary_refill_time";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -471,7 +480,7 @@ export interface components {
          * HistoryItemCategory
          * @enum {string}
          */
-        HistoryItemCategory: "presenting_complaint" | "history_of_presenting_complaint" | "past medical_history" | "past surgical_history" | "medication_history" | "allergy_history" | "family_history" | "social_history" | "antinatal_history" | "birth_history" | "developmental_history" | "nutrition_history" | "vaccination_history" | "past_gynaecological_history" | "past_obstetric_history" | "past_menstrual_history";
+        HistoryItemCategory: "presenting_complaint" | "history_of_presenting_complaint" | "associated_symptoms" | "past_medical_history" | "past_surgical_history" | "medication_history" | "allergy_history" | "family_history" | "social_history" | "antinatal_history" | "birth_history" | "developmental_history" | "nutrition_history" | "vaccination_history" | "past_gynaecological_history" | "past_obstetric_history" | "past_menstrual_history";
         /** HistoryItemCreate */
         HistoryItemCreate: {
             category: components["schemas"]["HistoryItemCategory"];
@@ -539,7 +548,7 @@ export interface components {
          * InvestigationName
          * @enum {string}
          */
-        InvestigationName: "full_blood_count" | "x_ray" | "ct_scan";
+        InvestigationName: "full_blood_count" | "x_ray" | "ct_scan" | "mri_scan" | "mr_angiography" | "ultrasound";
         /** LongCaseAttemptChatRequest */
         LongCaseAttemptChatRequest: {
             /** Content */
@@ -767,7 +776,7 @@ export interface components {
             /** Title */
             title: string;
             specialty: components["schemas"]["Specialty"];
-            category?: components["schemas"]["LongCaseCategory"] | null;
+            category: components["schemas"]["LongCaseCategory"];
             /** @default final_mbbs */
             difficulty: components["schemas"]["DifficultyLevel"];
             /** Description */
@@ -783,7 +792,7 @@ export interface components {
             /** Title */
             title: string;
             specialty: components["schemas"]["Specialty"];
-            category?: components["schemas"]["LongCaseCategory"] | null;
+            category: components["schemas"]["LongCaseCategory"];
             /** @default final_mbbs */
             difficulty: components["schemas"]["DifficultyLevel"];
             /** Description */
@@ -949,7 +958,7 @@ export interface components {
             /** Title */
             title: string;
             specialty: components["schemas"]["Specialty"];
-            category?: components["schemas"]["LongCaseCategory"] | null;
+            category: components["schemas"]["LongCaseCategory"];
             /** @default final_mbbs */
             difficulty: components["schemas"]["DifficultyLevel"];
             /** Description */
@@ -1023,8 +1032,7 @@ export interface components {
             name?: string | null;
             /** Age */
             age?: number | null;
-            /** Sex */
-            sex?: string | null;
+            sex: components["schemas"]["Sex"];
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -1042,8 +1050,7 @@ export interface components {
             name?: string | null;
             /** Age */
             age?: number | null;
-            /** Sex */
-            sex?: string | null;
+            sex: components["schemas"]["Sex"];
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -1081,8 +1088,7 @@ export interface components {
             name?: string | null;
             /** Age */
             age?: number | null;
-            /** Sex */
-            sex?: string | null;
+            sex?: components["schemas"]["Sex"] | null;
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -1094,6 +1100,11 @@ export interface components {
             /** Weight Kg */
             weight_kg?: number | null;
         };
+        /**
+         * Sex
+         * @enum {string}
+         */
+        Sex: "male" | "female";
         /**
          * Specialty
          * @enum {string}

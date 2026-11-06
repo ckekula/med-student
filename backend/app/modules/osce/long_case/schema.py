@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, model_validator
 class LongCaseBase(BaseModel):
     title: str = Field(..., max_length=255)
     specialty: Specialty
-    category: LongCaseCategory | None = None
+    category: LongCaseCategory
     difficulty: DifficultyLevel = DifficultyLevel.FINAL_MBBS
     description: str | None = None
     is_active: bool = True
@@ -40,7 +40,7 @@ class LongCaseRead(LongCaseBase, ORMBase):
 class PatientProfileBase(BaseModel):
     name: str | None = Field(None, max_length=100)
     age: int | None = None
-    sex: str | None = Field(None, max_length=20)
+    sex: Sex
     occupation: str | None = Field(None, max_length=150)
     location: str | None = Field(None, max_length=150)
     marital_status: str | None = Field(None, max_length=50)
@@ -55,7 +55,7 @@ class PatientProfileCreate(PatientProfileBase):
 class PatientProfileUpdate(BaseModel):
     name: str | None = Field(None, max_length=100)
     age: int | None = None
-    sex: str | None = Field(None, max_length=20)
+    sex: Sex | None = None
     occupation: str | None = Field(None, max_length=150)
     location: str | None = Field(None, max_length=150)
     marital_status: str | None = Field(None, max_length=50)
@@ -74,7 +74,7 @@ class PatientProfileRead(PatientProfileBase, ORMBase):
 class HistoryItemBase(BaseModel):
     category: HistoryItemCategory
     description: str
-    points: float = 1.0
+    points: int = 1
 
 
 class HistoryItemCreate(HistoryItemBase):
@@ -84,7 +84,7 @@ class HistoryItemCreate(HistoryItemBase):
 class HistoryItemUpdate(BaseModel):
     category: HistoryItemCategory | None = None
     description: str | None = None
-    points: float | None = None
+    points: int | None = None
 
 
 class HistoryItemRead(HistoryItemBase, ORMBase):
@@ -98,7 +98,7 @@ class HistoryItemRead(HistoryItemBase, ORMBase):
 class LongCaseExaminationBase(BaseModel):
     name: ExaminationName
     findings: str
-    points: float = 1.0
+    points: int = 1
 
 
 class LongCaseExaminationCreate(LongCaseExaminationBase):
@@ -108,7 +108,7 @@ class LongCaseExaminationCreate(LongCaseExaminationBase):
 class LongCaseExaminationUpdate(BaseModel):
     name: ExaminationName | None = None
     findings: str | None = None
-    points: float | None = None
+    points: int | None = None
 
 
 class LongCaseExaminationRead(LongCaseExaminationBase, ORMBase):
@@ -122,7 +122,7 @@ class LongCaseExaminationRead(LongCaseExaminationBase, ORMBase):
 class LongCaseInvestigationBase(BaseModel):
     name: InvestigationName
     findings: str
-    points: float = 1.0
+    points: int = 1
 
 
 class LongCaseInvestigationCreate(LongCaseInvestigationBase):
@@ -132,7 +132,7 @@ class LongCaseInvestigationCreate(LongCaseInvestigationBase):
 class LongCaseInvestigationUpdate(BaseModel):
     name: InvestigationName | None = None
     findings: str | None = None
-    points: float | None = None
+    points: int | None = None
 
 
 class LongCaseInvestigationRead(LongCaseInvestigationBase, ORMBase):
@@ -144,9 +144,12 @@ class LongCaseInvestigationRead(LongCaseInvestigationBase, ORMBase):
 
 # DifferentialDiagnosis (lower `priority` ranks higher)
 class DifferentialDiagnosisBase(BaseModel):
-    diagnosis: str = Field(..., max_length=255)
-    supporting_features: list[str] = Field(default_factory=list)
-    priority: int = Field(1, ge=1)
+    primary_diagnosis: str = Field(..., min_length=1)
+    secondary_diagnosis: str | None = None
+    etiology: str = Field(..., min_length=1)
+    location_laterality: str = Field(..., min_length=1)
+    severity_stage: str = Field(..., min_length=1)
+    complications: str | None = Field(None, min_length=1)
 
 
 class DifferentialDiagnosisCreate(DifferentialDiagnosisBase):
@@ -154,10 +157,12 @@ class DifferentialDiagnosisCreate(DifferentialDiagnosisBase):
 
 
 class DifferentialDiagnosisUpdate(BaseModel):
-    diagnosis: str | None = Field(None, max_length=255)
-    supporting_features: list[str] | None = None
-    priority: int | None = Field(None, ge=1)
-
+    primary_diagnosis: str | None = Field(None, min_length=1)
+    secondary_diagnosis: str | None = Field(None, min_length=1)
+    etiology: str | None = Field(None, min_length=1)
+    location_laterality: str | None = Field(None, min_length=1)
+    severity_stage: str | None = Field(None, min_length=1)
+    complications: str | None = Field(None, min_length=1)
 
 class DifferentialDiagnosisRead(DifferentialDiagnosisBase, ORMBase):
     id: uuid.UUID
@@ -176,8 +181,8 @@ class LongCaseDetail(LongCaseRead):
 
 
 # Atomic write payloads — POST /long-cases/full and PUT /long-cases/{id}/details
-MAX_CHILDREN = 100  # per collection; also bounds `priority` (see service.py)
-MAX_POINTS = 999  # the points columns are Numeric(3, 0)
+MAX_CHILDREN = 100  # per collection;
+MAX_POINTS = 99  # the points columns are Numeric(2, 0)
 
 Points = Annotated[int, Field(ge=0, le=MAX_POINTS)]
 
@@ -207,9 +212,12 @@ class LongCaseInvestigationWrite(WriteChild):
 
 
 class DifferentialDiagnosisWrite(WriteChild):
-    diagnosis: str = Field(..., min_length=1, max_length=255)
-    supporting_features: list[str] = Field(default_factory=list)
-    priority: int = Field(..., ge=1, le=MAX_CHILDREN)
+    primary_diagnosis: str = Field(..., min_length=1)
+    secondary_diagnosis:  str = Field(..., min_length=1)
+    etiology: str = Field(..., min_length=1)
+    location_laterality: str = Field(..., min_length=1)
+    severity_stage: str = Field(..., min_length=1)
+    complications: str = Field(..., min_length=1)
 
 
 def _reject_duplicates(values: list, label: str) -> None:
@@ -244,5 +252,4 @@ class LongCaseWrite(BaseModel):
         # Mirror the unique constraints in models.py so violations are a clear 422, not a DB error.
         _reject_duplicates([e.name for e in self.examinations], "examination names")
         _reject_duplicates([i.name for i in self.investigations], "investigation names")
-        _reject_duplicates([d.priority for d in self.differential_diagnoses], "differential diagnosis priorities")
         return self

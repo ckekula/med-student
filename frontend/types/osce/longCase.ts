@@ -1,6 +1,6 @@
 // Enums
-export type LongCaseSpecialty = 'Medicine' | 'Surgery' | 'Paediatrics' | 'GynObs' | 'Psychiatry';
-export type DifficultyLevel = 'Final MBBS' | 'Post Graduate';
+export type LongCaseSpecialty = 'medicine' | 'surgery' | 'paediatrics' | 'gynobs' | 'ssychiatry';
+export type DifficultyLevel = 'final_mbbs' | 'post_graduate';
 export type LongCaseCategory =
   | 'Breast'
   | 'Respiratory'
@@ -13,8 +13,17 @@ export type LongCaseCategory =
   | 'Psychiatric';
 export type ExaminationName = 'Physical' | 'Neurological' | 'Respiratory' | 'Cardiovascular' | 'Gastrointestinal';
 
-// TODO: replace with the values of the backend enums.
-export type HistoryItemCategory = string;
+export type HistoryItemCategory =
+  'presenting_complaint' |
+  'history_of_presenting_complaint' |
+  'associated_symptoms' |
+  'past_medical_history' |
+  'past_surgical_history' |
+  'medication_history' |
+  'family_history' |
+  'social_history' |
+  'allergy_history';
+
 export type InvestigationName = string;
 
 export interface LongCase {

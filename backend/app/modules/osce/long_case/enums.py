@@ -10,6 +10,15 @@ __all__ = [
     "Specialty",
 ]
 
+class Sex(Enum):
+    MALE = "male"
+    FEMALE = "female"
+
+
+class DifficultyLevel(Enum):
+    FINAL_MBBS = "final_mbbs"
+    PG = "post_graduate"
+
 
 class Specialty(Enum):
     MEDICINE = "medicine"
@@ -67,16 +76,6 @@ class LongCaseCategory(Enum):
     REPRODUCTIVE_HEALTH_ISSUES = "reproductive_health_issues"
 
 
-class ExaminationName(Enum):
-    GENERAL_EXAMINATION = "general_examination"
-    SYSTEMIC_EXAMINATION = "systemic_examination"
-
-
-class DifficultyLevel(Enum):
-    FINAL_MBBS = "final_mbbs"
-    PG = "post_graduate"
-
-
 class HistoryItemCategory(Enum):
     PC = "presenting_complaint"
     HOPC = "history_of_presenting_complaint" # rules for obs
@@ -103,7 +102,15 @@ class InvestigationName(Enum):
     FBC = "full_blood_count"
     XRAY = "x_ray"
     CT = "ct_scan"
+    MRI = "mri_scan"
+    MRA = "mr_angiography"
+    ULTRASOUND = "ultrasound"
 
-class Sex(Enum):
-    MALE = "male"
-    FEMALE = "female"
+
+class ExaminationName(Enum):
+    TENDON_XANTHOMAS = "tendon_xanthomas"
+    SYSTEMIC_EXAMINATION = "peripheral_embolic_stigmata"
+    PULSES = "pulses"
+    CLUBBING = "clubbing"
+    BURGERS_TEST = 'buergers_test'
+    CRT = 'capillary_refill_time'
