@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LONG_CASE_SPECIALTIES } from "@/lib/osce/longCaseOptions";
+import { SPECIALTY } from "@/types/api-enums.generated";
 import type { LongCaseListParams } from "@/types/osce/longCase";
 
 export const LONG_CASES_PATH = "/long-cases";
@@ -10,7 +10,7 @@ export type StatusFilter = (typeof STATUS_FILTERS)[number];
 
 // Invalid or tampered URL params fall back to defaults instead of throwing.
 const listQuerySchema = z.object({
-  specialty: z.enum(LONG_CASE_SPECIALTIES).optional().catch(undefined),
+  specialty: z.enum(SPECIALTY).optional().catch(undefined),
   status: z.enum(STATUS_FILTERS).catch("all"),
   page: z.coerce.number().int().min(1).catch(1),
 });

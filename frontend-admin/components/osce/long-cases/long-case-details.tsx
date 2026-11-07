@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
-import { HISTORY_ITEM_CATEGORIES, HISTORY_ITEM_CATEGORY_LABELS } from "@/lib/osce/longCaseOptions";
+import { HISTORY_ITEM_CATEGORY_LABELS } from "@/lib/osce/longCaseOptions";
+import { HISTORY_ITEM_CATEGORY } from "@/types/api-enums.generated";
 import type { LongCaseDetail, PatientProfile } from "@/types/osce/longCase";
 
 const formatPoints = (points: number) => `${points} ${points === 1 ? "pt" : "pts"}`;
@@ -44,7 +45,7 @@ function ProfileList({ profile }: { profile: PatientProfile }) {
 }
 
 export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
-  const historyGroups = HISTORY_ITEM_CATEGORIES.map((category) => ({
+  const historyGroups = HISTORY_ITEM_CATEGORY.map((category) => ({
     category,
     items: details.history_items.filter((item) => item.category === category),
   })).filter((group) => group.items.length > 0);

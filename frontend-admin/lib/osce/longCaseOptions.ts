@@ -4,7 +4,15 @@
  * labels are display-only.
  */
 
-import { EXAMINATION_NAME, HISTORY_ITEM_CATEGORY, INVESTIGATION_NAME, LONG_CASE_CATEGORY, SPECIALTY } from "@/types/api-enums.generated";
+import {
+  DIFFICULTY_LEVEL,
+  EXAMINATION_NAME,
+  HISTORY_ITEM_CATEGORY,
+  INVESTIGATION_NAME,
+  LONG_CASE_CATEGORY,
+  SEX,
+  SPECIALTY
+} from "@/types/api-enums.generated";
 
 export interface Option<T extends string> {
   readonly value: T;
@@ -18,7 +26,6 @@ function buildOptions<T extends string>(
   return values.map((value) => ({ value, label: labels[value] }));
 }
 
-export const SEX = ["male", "female"] as const;
 export type Sex = (typeof SEX)[number];
 export const SEX_LABELS: Readonly<Record<Sex, string>> = {
   male: "Male",
@@ -38,13 +45,12 @@ export const SPECIALTY_LABELS: Readonly<Record<LongCaseSpecialty, string>> = {
 export const SPECIALTY_OPTIONS = buildOptions(SPECIALTY, SPECIALTY_LABELS);
 
 // Difficulty
-export const DIFFICULTY_LEVELS = ["final_mbbs", "post_graduate"] as const;
-export type DifficultyLevel = (typeof DIFFICULTY_LEVELS)[number];
+export type DifficultyLevel = (typeof DIFFICULTY_LEVEL)[number];
 export const DIFFICULTY_LABELS: Readonly<Record<DifficultyLevel, string>> = {
   "final_mbbs": "Final MBBS",
   "post_graduate": "Post Graduate",
 };
-export const DIFFICULTY_OPTIONS = buildOptions(DIFFICULTY_LEVELS, DIFFICULTY_LABELS);
+export const DIFFICULTY_OPTIONS = buildOptions(DIFFICULTY_LEVEL, DIFFICULTY_LABELS);
 
 // Category
 export type LongCaseCategory = (typeof LONG_CASE_CATEGORY)[number];
@@ -95,8 +101,12 @@ export const CATEGORY_OPTIONS = buildOptions(LONG_CASE_CATEGORY, CATEGORY_LABELS
 // Examination
 export type ExaminationName = (typeof EXAMINATION_NAME)[number];
 export const EXAMINATION_LABELS: Readonly<Record<ExaminationName, string>> = {
-  general_examination: "General Examination",
-  systemic_examination: "Systemic Examination"
+  tendon_xanthomas: "Tendon Xanthomas",
+  peripheral_embolic_stigmata: "Peripheral Embolic Stigmata",
+  pulses: "Pulses",
+  clubbing: "Clubbing",
+  buergers_test: "Buerger's Test",
+  "capillary_refill_time": "Capillary Refill Time",
 };
 export const EXAMINATION_OPTIONS = buildOptions(EXAMINATION_NAME, EXAMINATION_LABELS);
 
@@ -105,6 +115,7 @@ export type HistoryItemCategory = (typeof HISTORY_ITEM_CATEGORY)[number];
 export const HISTORY_ITEM_CATEGORY_LABELS: Readonly<Record<HistoryItemCategory, string>> = {
   presenting_complaint: "Presenting complaint",
   history_of_presenting_complaint: "History of presenting complaint",
+  associated_symptoms: "Associated symptoms",
   past_medical_history: "Past medical history",
   past_surgical_history: "Past surgical history",
   medication_history: "Medication history",
@@ -127,6 +138,9 @@ export type InvestigationName = (typeof INVESTIGATION_NAME)[number];
 export const INVESTIGATION_LABELS: Readonly<Record<InvestigationName, string>> = {
   full_blood_count: "Full Blood Count",
   x_ray: "X Ray",
-  ct_scan: "CT Scan"
+  ct_scan: "CT Scan",
+  mri_scan: "MRI Scan",
+  mr_angiography: "MR Angiography",
+  ultrasound: "Ultrasound",
 };
 export const INVESTIGATION_OPTIONS = buildOptions(INVESTIGATION_NAME, INVESTIGATION_LABELS);

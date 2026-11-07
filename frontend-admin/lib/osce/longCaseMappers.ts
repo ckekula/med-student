@@ -9,19 +9,21 @@ import {
   type PatientProfileFormValues,
 } from "@/lib/validations/osce/longCase";
 import {
-  EXAMINATION_NAMES,
-  HISTORY_ITEM_CATEGORIES,
-  INVESTIGATION_NAMES,
   type ExaminationName,
   type InvestigationName,
 } from "@/lib/osce/longCaseOptions";
+import {
+  EXAMINATION_NAME,
+  HISTORY_ITEM_CATEGORY,
+  INVESTIGATION_NAME,
+} from "@/types/api-enums.generated";
 import type { LongCaseDetail, LongCaseWritePayload, PatientProfileInput } from "@/types/osce/longCase";
 
 // Form defaults
 
 export const createEmptyHistoryItem = (): HistoryItemFormValues => ({
   serverId: null,
-  category: HISTORY_ITEM_CATEGORIES[0],
+  category: HISTORY_ITEM_CATEGORY[0],
   description: "",
   points: 1,
 });
@@ -32,14 +34,14 @@ const firstUnused = <T extends string>(all: readonly T[], used: readonly T[]): T
 
 export const createEmptyExamination = (used: readonly ExaminationName[] = []): ExaminationFormValues => ({
   serverId: null,
-  name: firstUnused(EXAMINATION_NAMES, used),
+  name: firstUnused(EXAMINATION_NAME, used),
   findings: "",
   points: 1,
 });
 
 export const createEmptyInvestigation = (used: readonly InvestigationName[] = []): InvestigationFormValues => ({
   serverId: null,
-  name: firstUnused(INVESTIGATION_NAMES, used),
+  name: firstUnused(INVESTIGATION_NAME, used),
   findings: "",
   points: 1,
 });

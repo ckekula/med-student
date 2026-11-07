@@ -1,13 +1,13 @@
 import { z } from "zod";
 import {
-  DIFFICULTY_LEVELS,
-  EXAMINATION_NAMES,
-  HISTORY_ITEM_CATEGORIES,
-  INVESTIGATION_NAMES,
-  LONG_CASE_CATEGORIES,
-  LONG_CASE_SPECIALTIES,
+  DIFFICULTY_LEVEL,
+  EXAMINATION_NAME,
+  HISTORY_ITEM_CATEGORY,
+  INVESTIGATION_NAME,
+  LONG_CASE_CATEGORY,
   SEX,
-} from "@/lib/osce/longCaseOptions";
+  SPECIALTY
+} from "@/types/api-enums.generated";
 
 export const MAX_POINTS = 100;
 export const MAX_ITEMS_PER_SECTION = 100;
@@ -62,21 +62,21 @@ export const patientProfileSchema = z.object({
 
 export const historyItemSchema = z.object({
   serverId,
-  category: z.enum(HISTORY_ITEM_CATEGORIES),
+  category: z.enum(HISTORY_ITEM_CATEGORY),
   description: requiredText("Description", 2000),
   points,
 });
 
 export const examinationSchema = z.object({
   serverId,
-  name: z.enum(EXAMINATION_NAMES),
+  name: z.enum(EXAMINATION_NAME),
   findings: requiredText("Findings", 2000),
   points,
 });
 
 export const investigationSchema = z.object({
   serverId,
-  name: z.enum(INVESTIGATION_NAMES),
+  name: z.enum(INVESTIGATION_NAME),
   findings: requiredText("Findings", 2000),
   points,
 });
@@ -95,10 +95,10 @@ export const differentialDiagnosisSchema = z.object({
 
 export const longCaseFormSchema = z.object({
   title: requiredText("Title", 200),
-  specialty: z.enum(LONG_CASE_SPECIALTIES),
+  specialty: z.enum(SPECIALTY),
   // NOT NULL in the database.
-  category: z.enum(LONG_CASE_CATEGORIES, { error: "Select a category" }),
-  difficulty: z.enum(DIFFICULTY_LEVELS),
+  category: z.enum(LONG_CASE_CATEGORY, { error: "Select a category" }),
+  difficulty: z.enum(DIFFICULTY_LEVEL),
   description: optionalText("Description", 2000),
   is_active: z.boolean(),
   patient_profile: patientProfileSchema,
