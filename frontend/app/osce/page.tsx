@@ -2,9 +2,11 @@ import { cards } from "@/components/osce/cases";
 import { LongCaseBrowser } from "@/components/osce/long-case-browser";
 import { getLongCases } from "@/lib/api/longCase";
 
+export const dynamic = "force-dynamic"; // stops docker from trying to pre-render the page at build time
+
 export default async function OSCEPage() {
-  // const longCases = (await getLongCases());
-  const longCases = cards
+  const longCases = (await getLongCases());
+  // const longCases = cards
 
   return (
     <div className="w-full flex flex-col items-center justify-center mb-20">
