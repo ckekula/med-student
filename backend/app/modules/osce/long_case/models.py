@@ -46,8 +46,8 @@ class LongCase(Base):
     investigations: Mapped[list["LongCaseInvestigation"]] = relationship(
         back_populates="long_case", cascade="all, delete-orphan"
     )
-    differential_diagnoses: Mapped[list["DifferentialDiagnosis"]] = relationship(
-        back_populates="long_case", cascade="all, delete-orphan"
+    differential_diagnosis: Mapped["DifferentialDiagnosis | None"] = relationship(
+        back_populates="long_case", uselist=False, cascade="all, delete-orphan"
     )
 
     # Attempts are preserved: no ORM cascade, and the DB rejects deletion of a
@@ -143,11 +143,13 @@ class LongCaseInvestigation(Base):
 
 class DifferentialDiagnosis(Base):
     """
-    A differential diagnosis for a long case, with its supporting features.
-    Lower `priority` values rank higher.
+    The differential diagnosis for a long case, with its supporting features.
     """
 
     __tablename__ = "long_case_differential_diagnoses"
+    __table_args__ = (
+        UniqueConstraint("long_case_id", name="uq_long_case_differential_diagnosis_case"),
+    )
 
     long_case_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_cases.id", ondelete="CASCADE"), nullable=False
@@ -159,7 +161,7 @@ class DifferentialDiagnosis(Base):
     severity_stage: Mapped[str] = mapped_column(Text, nullable=True)
     complications: Mapped[str] = mapped_column(Text, nullable=True)
 
-    long_case: Mapped["LongCase"] = relationship(back_populates="differential_diagnoses")
+    long_case: Mapped["LongCase"] = relationship(back_populates="differential_diagnosis")
 
 
 # medicine

@@ -42,12 +42,6 @@ T = TypeVar("T")
 
 _LONG_CASE_FIELDS = {"title", "specialty", "category", "difficulty", "description", "is_active"}
 
-# Kept differentials are moved to `parking offset + priority` before their final priority is written, so
-# re-ordering never violates the unique (long_case_id, priority) constraint halfway through.
-# Must be larger than MAX_CHILDREN in schema.py.
-_PRIORITY_PARKING_OFFSET = 1_000_000
-
-
 # Loading
 async def load_long_case(db: AsyncSession, long_case_id: uuid.UUID, *, for_update: bool = False) -> LongCase | None:
     """Loads a long case with every child collection; always re-reads from the database."""
@@ -59,7 +53,7 @@ async def load_long_case(db: AsyncSession, long_case_id: uuid.UUID, *, for_updat
             selectinload(LongCase.history_items),
             selectinload(LongCase.examinations),
             selectinload(LongCase.investigations),
-            selectinload(LongCase.differential_diagnoses),
+            selectinload(LongCase.differential_diagnosis),
         )
         .execution_options(populate_existing=True)
     )
@@ -99,9 +93,11 @@ async def create_long_case(db: AsyncSession, payload: LongCaseWrite) -> LongCase
         history_items=[HistoryItem(**item.model_dump(exclude={"id"})) for item in payload.history_items],
         examinations=[LongCaseExamination(**item.model_dump(exclude={"id"})) for item in payload.examinations],
         investigations=[LongCaseInvestigation(**item.model_dump(exclude={"id"})) for item in payload.investigations],
-        differential_diagnoses=[
-            DifferentialDiagnosis(**item.model_dump(exclude={"id"})) for item in payload.differential_diagnoses
-        ],
+        differential_diagnosis=(
+            DifferentialDiagnosis(**payload.differential_diagnosis.model_dump(exclude={"id"}))
+            if payload.differential_diagnosis
+            else None
+        ),
     )
     db.add(long_case)
 
@@ -128,7 +124,9 @@ async def update_long_case(db: AsyncSession, long_case_id: uuid.UUID, payload: L
         await _sync_plain(db, long_case_id, HistoryItem, long_case.history_items, payload.history_items)
         await _sync_named(db, long_case_id, LongCaseExamination, long_case.examinations, payload.examinations)
         await _sync_named(db, long_case_id, LongCaseInvestigation, long_case.investigations, payload.investigations)
-        await _sync_differentials(db, long_case_id, long_case.differential_diagnoses, payload.differential_diagnoses)
+        await _sync_differential(
+            db, long_case_id, long_case.differential_diagnosis, payload.differential_diagnosis
+        )
         await db.commit()
 
     return await _reload(db, long_case_id)
@@ -222,24 +220,23 @@ async def _apply_renames(db: AsyncSession, updates: list[tuple[Any, dict[str, An
         pending = [(row, fields) for row, fields in pending if id(row) not in done]
 
 
-async def _sync_differentials(
+async def _sync_differential(
     db: AsyncSession,
     long_case_id: uuid.UUID,
-    existing: Sequence[DifferentialDiagnosis],
-    items: Sequence[DifferentialDiagnosisWrite],
+    existing: DifferentialDiagnosis | None,
+    item: DifferentialDiagnosisWrite | None,
 ) -> None:
-    """Sync for differentials, whose (long_case_id, priority) pair is unique."""
-    by_id, removed = _match_existing(existing, items)
-    for row in removed:
-        await db.delete(row)
+    """Sync the optional singleton differential diagnosis."""
+    if item is None:
+        if existing is not None:
+            await db.delete(existing)
+        return
 
-    kept = [item for item in items if item.id is not None]
-    for item in kept:
-        by_id[item.id].priority = _PRIORITY_PARKING_OFFSET + item.priority  # type: ignore[index]
-    await db.flush()  # deletes + parking, so final priorities are all free
+    if existing is None:
+        db.add(DifferentialDiagnosis(long_case_id=long_case_id, **item.model_dump(exclude={"id"})))
+        return
 
-    for item in kept:
-        _assign(by_id[item.id], item.model_dump(exclude={"id"}))  # type: ignore[index]
-    for item in items:
-        if item.id is None:
-            db.add(DifferentialDiagnosis(long_case_id=long_case_id, **item.model_dump(exclude={"id"})))
+    if item.id is not None and item.id != existing.id:
+        raise HTTPException(422, f"Unknown child id for this long case: {item.id}")
+
+    _assign(existing, item.model_dump(exclude={"id"}))

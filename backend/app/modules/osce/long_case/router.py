@@ -63,7 +63,7 @@ def _to_detail(long_case: LongCase) -> LongCaseDetail:
         history_items=sorted(long_case.history_items, key=by_created),
         examinations=sorted(long_case.examinations, key=by_created),
         investigations=sorted(long_case.investigations, key=by_created),
-        differential_diagnoses=sorted(long_case.differential_diagnoses, key=lambda d: d.priority),
+        differential_diagnosis=long_case.differential_diagnosis,
     )
 
 

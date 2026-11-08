@@ -1,3 +1,8 @@
+Run backend:
+```bash
+uvicorn app.main:app --reload
+```
+
 Wipe everything:
 ```bash
 docker compose exec backend rm -f migrations/versions/*.py

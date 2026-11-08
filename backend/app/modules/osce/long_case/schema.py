@@ -142,7 +142,7 @@ class LongCaseInvestigationRead(LongCaseInvestigationBase, ORMBase):
     updated_at: datetime
 
 
-# DifferentialDiagnosis (lower `priority` ranks higher)
+# DifferentialDiagnosis (one per long case)
 class DifferentialDiagnosisBase(BaseModel):
     primary_diagnosis: str = Field(..., min_length=1)
     secondary_diagnosis: str | None = None
@@ -177,7 +177,7 @@ class LongCaseDetail(LongCaseRead):
     history_items: list[HistoryItemRead] = Field(default_factory=list)
     examinations: list[LongCaseExaminationRead] = Field(default_factory=list)
     investigations: list[LongCaseInvestigationRead] = Field(default_factory=list)
-    differential_diagnoses: list[DifferentialDiagnosisRead] = Field(default_factory=list)
+    differential_diagnosis: DifferentialDiagnosisRead | None = None
 
 
 # Atomic write payloads — POST /long-cases/full and PUT /long-cases/{id}/details
@@ -236,7 +236,7 @@ class LongCaseWrite(BaseModel):
     history_items: list[HistoryItemWrite] = Field(default_factory=list, max_length=MAX_CHILDREN)
     examinations: list[LongCaseExaminationWrite] = Field(default_factory=list, max_length=MAX_CHILDREN)
     investigations: list[LongCaseInvestigationWrite] = Field(default_factory=list, max_length=MAX_CHILDREN)
-    differential_diagnoses: list[DifferentialDiagnosisWrite] = Field(default_factory=list, max_length=MAX_CHILDREN)
+    differential_diagnosis: DifferentialDiagnosisWrite | None = None
 
     @model_validator(mode="after")
     def _check_uniqueness(self) -> "LongCaseWrite":
@@ -244,7 +244,6 @@ class LongCaseWrite(BaseModel):
             ("history item", self.history_items),
             ("examination", self.examinations),
             ("investigation", self.investigations),
-            ("differential diagnosis", self.differential_diagnoses),
         )
         for label, items in collections:
             _reject_duplicates([i.id for i in items if i.id is not None], f"{label} ids")
