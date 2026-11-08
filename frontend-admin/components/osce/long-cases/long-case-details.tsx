@@ -50,8 +50,6 @@ export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
     items: details.history_items.filter((item) => item.category === category),
   })).filter((group) => group.items.length > 0);
 
-  const differentials = [...details.differential_diagnoses].sort((a, b) => a.priority - b.priority);
-
   return (
     <div className="grid gap-8">
       {details.description && <p className="max-w-prose text-sm whitespace-pre-wrap">{details.description}</p>}
@@ -122,24 +120,18 @@ export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
         </DetailSection>
       </div>
 
-      <DetailSection title="Differential diagnoses" count={differentials.length}>
-        {differentials.length === 0 ? (
-          <Empty>No differential diagnoses.</Empty>
+      <DetailSection title="Differential diagnosis">
+        {!details.differential_diagnosis ? (
+          <Empty>No differential diagnosis.</Empty>
         ) : (
-          <ol className="grid list-decimal gap-3 pl-5 text-sm">
-            {differentials.map((item) => (
-              <li key={item.id} className="pl-1">
-                <span className="font-medium">{item.diagnosis}</span>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {item.supporting_features.map((feature, index) => (
-                    <Badge key={`${item.id}-${index}`} variant="outline">
-                      {feature}
-                    </Badge>
-                  ))}
-                </div>
-              </li>
+          <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+            {Object.entries(details.differential_diagnosis).filter(([key]) => !["id", "long_case_id", "created_at", "updated_at"].includes(key)).map(([key, value]) => (
+              <div key={key}>
+                <dt className="text-muted-foreground text-xs capitalize">{key.replaceAll("_", " ")}</dt>
+                <dd className="whitespace-pre-wrap">{value ?? "—"}</dd>
+              </div>
             ))}
-          </ol>
+          </dl>
         )}
       </DetailSection>
     </div>

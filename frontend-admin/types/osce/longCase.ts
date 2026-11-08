@@ -79,9 +79,12 @@ export interface Investigation {
 export interface DifferentialDiagnosis {
   id: string;
   long_case_id: string;
-  diagnosis: string;
-  supporting_features: string[];
-  priority: number;
+  primary_diagnosis: string;
+  secondary_diagnosis: string | null;
+  etiology: string | null;
+  location_laterality: string | null;
+  severity_stage: string | null;
+  complications: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -92,7 +95,7 @@ export interface LongCaseDetail extends LongCase {
   history_items: HistoryItem[];
   examinations: Examination[];
   investigations: Investigation[];
-  differential_diagnoses: DifferentialDiagnosis[];
+  differential_diagnosis: DifferentialDiagnosis | null;
 }
 
 // Query params
@@ -122,6 +125,5 @@ export interface LongCaseWritePayload
   history_items: HistoryItemInput[];
   examinations: ExaminationInput[];
   investigations: InvestigationInput[];
-  /** `priority` is 1-based and defines the order shown to students. */
-  differential_diagnoses: DifferentialDiagnosisInput[];
+  differential_diagnosis: DifferentialDiagnosisInput | null;
 }

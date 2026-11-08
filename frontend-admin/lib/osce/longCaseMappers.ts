@@ -1,6 +1,5 @@
 import type { DefaultValues } from "react-hook-form";
 import {
-  parseFeatureLines,
   type DifferentialDiagnosisFormValues,
   type ExaminationFormValues,
   type HistoryItemFormValues,
@@ -48,8 +47,12 @@ export const createEmptyInvestigation = (used: readonly InvestigationName[] = []
 
 export const createEmptyDifferential = (): DifferentialDiagnosisFormValues => ({
   serverId: null,
-  diagnosis: "",
-  supporting_features: "",
+  primary_diagnosis: "",
+  secondary_diagnosis: "",
+  etiology: "",
+  location_laterality: "",
+  severity_stage: "",
+  complications: "",
 });
 
 /** `category` is intentionally unset: the admin must choose one. */
@@ -74,7 +77,7 @@ export function createEmptyFormValues(): DefaultValues<LongCaseFormValues> {
     history_items: [],
     examinations: [],
     investigations: [],
-    differential_diagnoses: [],
+    differential_diagnosis: null,
   };
 }
 
@@ -118,13 +121,17 @@ export function toFormValues(detail: LongCaseDetail): LongCaseFormValues {
       findings: item.findings,
       points: item.points,
     })),
-    differential_diagnoses: [...detail.differential_diagnoses]
-      .sort((a, b) => a.priority - b.priority)
-      .map((item) => ({
-        serverId: item.id,
-        diagnosis: item.diagnosis,
-        supporting_features: item.supporting_features.join("\n"),
-      })),
+    differential_diagnosis: detail.differential_diagnosis
+      ? {
+          serverId: detail.differential_diagnosis.id,
+          primary_diagnosis: detail.differential_diagnosis.primary_diagnosis,
+          secondary_diagnosis: detail.differential_diagnosis.secondary_diagnosis ?? "",
+          etiology: detail.differential_diagnosis.etiology ?? "",
+          location_laterality: detail.differential_diagnosis.location_laterality ?? "",
+          severity_stage: detail.differential_diagnosis.severity_stage ?? "",
+          complications: detail.differential_diagnosis.complications ?? "",
+        }
+      : null,
   };
 }
 
@@ -166,13 +173,15 @@ export function toWritePayload(values: LongCaseFormValues): LongCaseWritePayload
     history_items: values.history_items.map(({ serverId, ...fields }) => withId(serverId, fields)),
     examinations: values.examinations.map(({ serverId, ...fields }) => withId(serverId, fields)),
     investigations: values.investigations.map(({ serverId, ...fields }) => withId(serverId, fields)),
-    // Priority is the position in the list.
-    differential_diagnoses: values.differential_diagnoses.map(({ serverId, diagnosis, supporting_features }, index) =>
-      withId(serverId, {
-        diagnosis,
-        supporting_features: parseFeatureLines(supporting_features),
-        priority: index + 1,
-      }),
-    ),
+    differential_diagnosis: values.differential_diagnosis
+      ? withId(values.differential_diagnosis.serverId, {
+          primary_diagnosis: values.differential_diagnosis.primary_diagnosis,
+          secondary_diagnosis: values.differential_diagnosis.secondary_diagnosis,
+          etiology: values.differential_diagnosis.etiology,
+          location_laterality: values.differential_diagnosis.location_laterality,
+          severity_stage: values.differential_diagnosis.severity_stage,
+          complications: values.differential_diagnosis.complications,
+        })
+      : null,
   };
 }

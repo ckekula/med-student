@@ -38,7 +38,7 @@ interface LongCaseFormDialogProps {
 }
 
 type SectionValue = "basics" | "patient" | "history" | "examinations" | "investigations" | "differentials";
-type ArrayFieldName = "history_items" | "examinations" | "investigations" | "differential_diagnoses";
+type ArrayFieldName = "history_items" | "examinations" | "investigations";
 
 interface SectionConfig {
   value: SectionValue;
@@ -54,7 +54,7 @@ const SECTIONS: readonly SectionConfig[] = [
   { value: "history", label: "History", fields: ["history_items"], countField: "history_items" },
   { value: "examinations", label: "Examinations", fields: ["examinations"], countField: "examinations" },
   { value: "investigations", label: "Investigations", fields: ["investigations"], countField: "investigations" },
-  { value: "differentials", label: "Differentials", fields: ["differential_diagnoses"], countField: "differential_diagnoses" },
+  { value: "differentials", label: "Differential", fields: ["differential_diagnosis"] },
 ];
 
 /**

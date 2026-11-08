@@ -824,8 +824,7 @@ export interface components {
             examinations?: components["schemas"]["LongCaseExaminationRead"][];
             /** Investigations */
             investigations?: components["schemas"]["LongCaseInvestigationRead"][];
-            /** Differential Diagnoses */
-            differential_diagnoses?: components["schemas"]["DifferentialDiagnosisRead"][];
+            differential_diagnosis?: components["schemas"]["DifferentialDiagnosisRead"] | null;
         };
         /** LongCaseExaminationCreate */
         LongCaseExaminationCreate: {
@@ -1018,8 +1017,7 @@ export interface components {
             examinations?: components["schemas"]["LongCaseExaminationWrite"][];
             /** Investigations */
             investigations?: components["schemas"]["LongCaseInvestigationWrite"][];
-            /** Differential Diagnoses */
-            differential_diagnoses?: components["schemas"]["DifferentialDiagnosisWrite"][];
+            differential_diagnosis?: components["schemas"]["DifferentialDiagnosisWrite"] | null;
         };
         /**
          * MessageSender

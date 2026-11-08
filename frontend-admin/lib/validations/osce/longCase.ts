@@ -83,14 +83,12 @@ export const investigationSchema = z.object({
 
 export const differentialDiagnosisSchema = z.object({
   serverId,
-  diagnosis: requiredText("Diagnosis", 200),
-  supporting_features: z
-    .string()
-    .refine((value) => parseFeatureLines(value).length > 0, "Add at least one supporting feature")
-    .refine(
-      (value) => parseFeatureLines(value).every((line) => line.length <= MAX_FEATURE_LENGTH),
-      `Each feature must be at most ${MAX_FEATURE_LENGTH} characters`,
-    ),
+  primary_diagnosis: requiredText("Primary diagnosis", 200),
+  secondary_diagnosis: requiredText("Secondary diagnosis", 200),
+  etiology: requiredText("Etiology", 500),
+  location_laterality: requiredText("Location/laterality", 500),
+  severity_stage: requiredText("Severity/stage", 500),
+  complications: requiredText("Complications", 1000),
 });
 
 export const longCaseFormSchema = z.object({
@@ -105,7 +103,7 @@ export const longCaseFormSchema = z.object({
   history_items: z.array(historyItemSchema).max(MAX_ITEMS_PER_SECTION),
   examinations: z.array(examinationSchema).max(MAX_ITEMS_PER_SECTION),
   investigations: z.array(investigationSchema).max(MAX_ITEMS_PER_SECTION),
-  differential_diagnoses: z.array(differentialDiagnosisSchema).max(MAX_ITEMS_PER_SECTION),
+  differential_diagnosis: differentialDiagnosisSchema.nullable(),
 })
   // The database has a unique (long case, name) constraint on both tables.
   .superRefine((values, ctx) => {
