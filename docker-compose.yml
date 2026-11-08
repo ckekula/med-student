@@ -3,7 +3,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: nextjs-app:latest
+    image: nextjs-frontend:latest
     restart: unless-stopped
     depends_on:
       backend:
@@ -22,7 +22,7 @@ services:
     build:
       context: ./frontend-admin
       dockerfile: Dockerfile
-    image: nextjs-app:latest
+    image: nextjs-admin:latest
     restart: unless-stopped
     depends_on:
       backend:

@@ -4,7 +4,7 @@ ARG NODE_VERSION=22-alpine
 
 # Base
 FROM node:${NODE_VERSION} AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
 WORKDIR /app
 
 # Dependencies
