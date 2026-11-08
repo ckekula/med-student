@@ -12,26 +12,17 @@ class LongCaseAttemptCreate(BaseModel):
 
 
 class LongCaseAttemptUpdate(BaseModel):
-    """Progression/evaluation fields. student_id and long_case_id are immutable after creation."""
+    """Progression/evaluation fields. user_id and long_case_id are immutable after creation."""
 
     status: AttemptStatus | None = None
-    history_completed_at: datetime | None = None
-    examination_completed_at: datetime | None = None
-    summary_completed_at: datetime | None = None
-    evaluated_at: datetime | None = None
     total_score: float | None = None
 
 
 class LongCaseAttemptRead(ORMBase):
     id: uuid.UUID
-    student_id: uuid.UUID
+    user_id: uuid.UUID
     long_case_id: uuid.UUID
     status: AttemptStatus
-    started_at: datetime
-    history_completed_at: datetime | None
-    examination_completed_at: datetime | None
-    summary_completed_at: datetime | None
-    evaluated_at: datetime | None
     total_score: float | None
     created_at: datetime
     updated_at: datetime

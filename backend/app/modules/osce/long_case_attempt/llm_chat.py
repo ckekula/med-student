@@ -45,7 +45,7 @@ def _extract_text(content: object) -> str:
 def _to_langchain_messages(system_prompt: str, history: list[LongCaseAttemptMessage]) -> list[BaseMessage]:
     messages: list[BaseMessage] = [SystemMessage(content=system_prompt)]
     for message in history:
-        if message.sender == MessageSender.STUDENT:
+        if message.sender == MessageSender.USER:
             messages.append(HumanMessage(content=message.content))
         else:
             messages.append(AIMessage(content=message.content))
@@ -56,7 +56,7 @@ async def generate_patient_reply(long_case: LongCase, history: list[LongCaseAtte
     """Generates the patient's next reply.
 
     `history` should be the full transcript for the attempt, in chronological
-    order, including the student's latest message. Raises whatever the
+    order, including the user's latest message. Raises whatever the
     underlying provider raises on failure (network/API errors) — the caller
     is expected to translate that into an HTTP error. This function never
     touches the database, so a failure here never loses already-persisted

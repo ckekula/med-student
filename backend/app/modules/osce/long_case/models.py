@@ -33,6 +33,7 @@ class LongCase(Base):
     )
     description: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    locked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     patient_profile: Mapped["PatientProfile | None"] = relationship(
         back_populates="long_case", uselist=False, cascade="all, delete-orphan"

@@ -36,8 +36,8 @@ router = APIRouter(prefix="/long-case-attempts", tags=["Long Case Attempts"])
 # Helpers
 async def _get_own_attempt_or_404(db: DbSession, user: CurrentDbUser, attempt_id: uuid.UUID) -> LongCaseAttempt:
     attempt = await db.get(LongCaseAttempt, attempt_id)
-    if attempt is None or attempt.student_id != user.id:
-        # 404 (not 403) so we don't leak the existence of other students' attempts.
+    if attempt is None or attempt.user_id != user.id:
+        # 404 (not 403) so we don't leak the existence of other users' attempts.
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Attempt not found")
     return attempt
 
@@ -57,7 +57,7 @@ async def create_attempt(payload: LongCaseAttemptCreate, db: DbSession, user: Cu
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Long case not found")
 
     attempt = LongCaseAttempt(
-        student_id=user.id,
+        user_id=user.id,
         long_case_id=payload.long_case_id,
         started_at=datetime.now(UTC),
     )
@@ -78,7 +78,7 @@ async def list_my_attempts(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
 ):
-    stmt = select(LongCaseAttempt).where(LongCaseAttempt.student_id == user.id).offset(skip).limit(limit)
+    stmt = select(LongCaseAttempt).where(LongCaseAttempt.user_id == user.id).offset(skip).limit(limit)
     result = await db.execute(stmt)
     return result.scalars().all()
 
@@ -276,8 +276,9 @@ async def send_chat_message(
 
     long_case = await _get_long_case_with_chat_context_or_404(db, attempt.long_case_id)
 
-    # Persist the student's message first so it's never lost, even if the LLM call below fails.
-    user_message = LongCaseAttemptMessage(attempt_id=attempt_id, sender=MessageSender.STUDENT, content=payload.content)
+
+    # Persist the user's message first so it's never lost, even if the LLM call below fails.
+    user_message = LongCaseAttemptMessage(attempt_id=attempt_id, sender=MessageSender.USER, content=payload.content)
     db.add(user_message)
     await db.commit()
     await db.refresh(user_message)

@@ -7,16 +7,16 @@ __all__ = [
 ]
 
 class AttemptStatus(Enum):
+    STARTED = "started"
     IN_PROGRESS_HISTORY = "in_progress_history"
     HISTORY_COMPLETE = "history_complete"
-    IN_PROGRESS_EXAMINATION = "in_progress_examination"
-    EXAMINATION_COMPLETE = "examination_complete"
+    IN_PROGRESS_SUMMARY = "in_progress_summary"
     SUMMARY_COMPLETE = "summary_complete"
     EVALUATED = "evaluated"
 
 
 class MessageSender(Enum):
-    STUDENT = "student"
+    USER = "user"
     PATIENT = "patient"
 
 

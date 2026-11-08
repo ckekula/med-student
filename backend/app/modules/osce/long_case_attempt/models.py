@@ -15,46 +15,31 @@ from sqlalchemy import (
     Numeric,
     Text,
     UniqueConstraint,
-    func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     # Only needed for the type checker. Otherwise causes circular import.
-    from app.modules.osce.long_case.models import (
-        HistoryItem,
-        LongCase,
-    )
+    from app.modules.osce.long_case.models import HistoryItem, LongCase
 
 
 class LongCaseAttempt(Base):
-    """One student's run through a long case: history chat, exam/investigation phase, and final score."""
+    """One user's run through a long case: history chat, exam/investigation phase, and final score."""
 
     __tablename__ = "long_case_attempts"
     __table_args__ = (
-        UniqueConstraint("student_id", "long_case_id", name="uq_student_long_case_attempt"),
+        UniqueConstraint("user_id", "long_case_id", name="uq_user_long_case_attempt"),
         CheckConstraint("total_score >= 0", name="ck_long_case_attempts_total_score_non_negative"),
     )
 
-    student_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     # RESTRICT: attempts are preserved. Deactivate a case via `is_active` instead of deleting it.
     long_case_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_cases.id", ondelete="RESTRICT"), nullable=False, index=True
     )
     status: Mapped[AttemptStatus] = mapped_column(
-        Enum(AttemptStatus), nullable=False, default=AttemptStatus.IN_PROGRESS_HISTORY, index=True
+        Enum(AttemptStatus), nullable=False, default=AttemptStatus.STARTED, index=True
     )
-
-    started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now()
-    )
-    history_completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    examination_completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    summary_completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    evaluated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-
     total_score: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
 
     long_case: Mapped["LongCase"] = relationship(back_populates="attempts")
@@ -73,7 +58,7 @@ class LongCaseAttempt(Base):
 
 
 class LongCaseAttemptMessage(Base):
-    """One turn of the history-taking chat (student question or AI-patient reply)."""
+    """One turn of the history-taking chat (user question or AI-patient reply)."""
 
     __tablename__ = "long_case_attempt_messages"
 
@@ -88,7 +73,7 @@ class LongCaseAttemptMessage(Base):
 
 class LongCaseAttemptExaminationSelection(Base):
     """
-    One examination the student selected during the examination phase.
+    One examination the user selected during the examination phase.
     examination_id is null when the input didn't match any known examination for
     this case (an irrelevant examination).
     """
@@ -118,7 +103,7 @@ class LongCaseAttemptHistoryResult(Base):
     attempt_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("long_case_attempts.id", ondelete="CASCADE"), nullable=False
     )
-    # removing a history item must not erase students' evaluation records.
+    # removing a history item must not erase users' evaluation records.
     history_item_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("history_items.id", ondelete="RESTRICT"), nullable=False, index=True
     )
@@ -128,7 +113,7 @@ class LongCaseAttemptHistoryResult(Base):
     evaluation_method_used: Mapped[EvaluationMethod] = mapped_column(
         Enum(EvaluationMethod), nullable=False
     )
-    # LLM judge's explanation, or the matched keyword for STRING_MATCH — shown to the student as feedback.
+    # LLM judge's explanation, or the matched keyword for STRING_MATCH — shown to the user as feedback.
     judge_reasoning: Mapped[str | None] = mapped_column(Text)
     evaluated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
