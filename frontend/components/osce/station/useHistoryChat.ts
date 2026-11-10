@@ -63,6 +63,7 @@ export function useHistoryChat({ attemptId, initialMessages }: UseHistoryChatOpt
         setMessages((prev) => [...prev, toChatMessage(reply)])
         return true
       } catch (err) {
+        console.log("sendChatMessage: ", err)
         setMessages((prev) => prev.filter((m) => m.id !== optimistic.id))
         if (!isAbortError(err)) setError(toErrorMessage(err))
         return false

@@ -37,9 +37,12 @@ export interface CallOptions {
 }
 
 function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
+  // Browser: same-origin, handled by the app/api/v1/[...path] proxy route.
+  if (typeof window !== "undefined") return "/api/v1";
+
+  const base = process.env.API_URL;
   if (!base) {
-    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+    throw new Error("API_URL is not configured");
   }
   return `${base.replace(/\/+$/, "")}/api/v1`;
 }
