@@ -20,7 +20,7 @@ docker compose cp backend:/app/migrations/versions/. ./backend/migrations/versio
 export openAPI:
 ```bash
 cd backend
-python export_openapi.py
+python scripts/export_openapi.py
 cd ../frontend
 pnpm api:types
 cd ../frontend-admin
