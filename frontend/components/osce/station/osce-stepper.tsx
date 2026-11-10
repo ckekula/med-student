@@ -15,16 +15,24 @@ import {
 } from "@/components/ui/stepper"
 import { LuCheck, LuLoaderCircle } from "react-icons/lu"
 import { useCountdown } from "@/hooks/use-countdown"
-import HistoryChat, { type ChatMessage } from "./history-chat"
 import SummaryChat from "./summary-chat"
 import Timer from "./timer"
+import HistoryChat from "./history-chat"
+import { useHistoryChat } from "./useHistoryChat"
+import { ChatMessage } from "@/types/osce/historyChat"
 
 const DEFAULT_TIME_LIMIT_SECONDS = 15 * 60
 const MIN_TIME_LIMIT_SECONDS = 60
 const MAX_TIME_LIMIT_SECONDS = 60 * 60
 const TIME_STEP_SECONDS = 60
 
-export function OSCEStepper() {
+interface OSCEStepperProps {
+  attemptId: string | null
+  initialMessages: readonly ChatMessage[]
+  isReadOnly: boolean
+}
+
+export function OSCEStepper({ attemptId, initialMessages, isReadOnly }: OSCEStepperProps) {
   const [durationSeconds, setDurationSeconds] = React.useState(DEFAULT_TIME_LIMIT_SECONDS)
   const { timeLeft, isRunning, isExpired, start } = useCountdown(durationSeconds)
 
@@ -42,16 +50,17 @@ export function OSCEStepper() {
   const canIncrease = !isRunning && durationSeconds < MAX_TIME_LIMIT_SECONDS
 
   // Chat state lives here so it survives switching steps
-  const [messages, setMessages] = React.useState<ChatMessage[]>([])
+  const chat = useHistoryChat({ attemptId, initialMessages })
 
   // The timer starts when the first message is sent
   const handleSendMessage = React.useCallback(
-    (message: ChatMessage) => {
+    (content: string) => {
       start()
-      setMessages((previous) => [...previous, message])
+      return chat.send(content)
     },
-    [start]
+    [start, chat],
   )
+
 
   const steps = [
     {
@@ -59,9 +68,12 @@ export function OSCEStepper() {
       description: "Take the patient history and perform examinations",
       component: (
         <HistoryChat
-          messages={messages}
-          onSendMessage={handleSendMessage}
+          messages={chat.messages}
+          isPending={chat.isPending}
+          error={chat.error}
           isTimeUp={isExpired}
+          isReadOnly={isReadOnly}
+          onSendMessage={handleSendMessage}
         />
       ),
     },

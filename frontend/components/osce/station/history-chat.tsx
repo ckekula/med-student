@@ -1,7 +1,5 @@
 "use client"
 
-import * as React from "react"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Bubble, BubbleContent, BubbleGroup } from "@/components/ui/bubble"
 import { Message, MessageAvatar, MessageContent } from "@/components/ui/message"
@@ -14,20 +12,15 @@ import {
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller"
 import { ChatComposer } from "./chat-composer"
-
-export type ChatMessage = {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  avatarSrc: string
-  avatarFallback: string
-}
+import { ChatMessage } from "@/types/osce/historyChat"
 
 type HistoryChatProps = {
-  /** Owned by the parent so the conversation survives step changes. */
   messages: readonly ChatMessage[]
-  onSendMessage: (message: ChatMessage) => void
+  isPending: boolean
+  error: string | null
   isTimeUp: boolean
+  isReadOnly: boolean
+  onSendMessage: (content: string) => Promise<boolean>
 }
 
 function groupMessages(messages: readonly ChatMessage[]) {
@@ -50,23 +43,10 @@ export default function HistoryChat({
   messages,
   onSendMessage,
   isTimeUp,
+  isPending,
+  error,
+  isReadOnly,
 }: HistoryChatProps) {
-
-  const handleSend = React.useCallback(
-    (content: string) => {
-      if (!content || isTimeUp) return
-
-      onSendMessage({
-        id: crypto.randomUUID(),
-        role: "user",
-        content,
-        avatarSrc: "/avatars/10.png",
-        avatarFallback: "R",
-      })
-    },
-    [isTimeUp, onSendMessage]
-  )
-
   const groups = groupMessages(messages)
 
   return (
@@ -87,8 +67,13 @@ export default function HistoryChat({
                     <Message align={first.role === "user" ? "end" : undefined}>
                       <MessageAvatar>
                         <Avatar>
-                          <AvatarImage src={first.avatarSrc} alt="@avatar" />
-                          <AvatarFallback>{first.avatarFallback}</AvatarFallback>
+                          <AvatarImage
+                            src={first.avatarSrc}
+                            alt="@avatar"
+                          />
+                          <AvatarFallback>
+                            {first.avatarFallback}
+                          </AvatarFallback>
                         </Avatar>
                       </MessageAvatar>
 
@@ -98,15 +83,25 @@ export default function HistoryChat({
                             {group.map((message) => (
                               <Bubble
                                 key={message.id}
-                                variant={message.role === "assistant" ? "muted" : undefined}
+                                variant={
+                                  message.role === "ai" ? "muted" : undefined
+                                }
                               >
-                                <BubbleContent>{message.content}</BubbleContent>
+                                <BubbleContent>
+                                  {message.content}
+                                </BubbleContent>
                               </Bubble>
                             ))}
                           </BubbleGroup>
                         ) : (
-                          <Bubble variant={first.role === "assistant" ? "muted" : undefined}>
-                            <BubbleContent>{first.content}</BubbleContent>
+                          <Bubble
+                            variant={
+                              first.role === "ai" ? "muted" : undefined
+                            }
+                          >
+                            <BubbleContent>
+                              {first.content}
+                            </BubbleContent>
                           </Bubble>
                         )}
                       </MessageContent>
@@ -114,6 +109,20 @@ export default function HistoryChat({
                   </MessageScrollerItem>
                 )
               })}
+
+              {isPending && (
+                <MessageScrollerItem messageId="typing-indicator">
+                  <Message>
+                    <MessageContent>
+                      <Bubble variant="muted">
+                        <BubbleContent>
+                          Patient is typing…
+                        </BubbleContent>
+                      </Bubble>
+                    </MessageContent>
+                  </Message>
+                </MessageScrollerItem>
+              )}
             </MessageScrollerContent>
           </MessageScrollerViewport>
 
@@ -121,7 +130,18 @@ export default function HistoryChat({
         </MessageScroller>
       </MessageScrollerProvider>
 
-      <ChatComposer isTimeUp={isTimeUp} onSend={handleSend} />
+      {error && (
+        <p role="alert" className="px-4 pb-2 text-sm text-destructive">
+          {error}
+        </p>
+      )}
+
+      <ChatComposer
+        isTimeUp={isTimeUp}
+        isPending={isPending}
+        isReadOnly={isReadOnly}
+        onSend={onSendMessage}
+      />
     </div>
   )
 }

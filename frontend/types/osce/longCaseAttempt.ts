@@ -1,19 +1,15 @@
-// TODO: replace with the values of the backend enums.
-export type AttemptStatus = "not_started" | "in_progress" | "completed" | "evaluated";
-export type MessageSender = "student" | "system";
-export type EvaluationMethod = "manual" | "automated";
+import { ATTEMPT_STATUS, EVALUATION_METHOD, MESSAGE_SENDER } from "../api-enums.generated";
+
+export type AttemptStatus = (typeof ATTEMPT_STATUS)[number]
+export type MessageSender = (typeof MESSAGE_SENDER)[number]
+export type EvaluationMethod = (typeof EVALUATION_METHOD)[number]
 
 // Entities (field names mirror the backend's snake_case responses)
 export interface LongCaseAttempt {
   id: string;
-  student_id: string;
+  user_id: string;
   long_case_id: string;
   status: AttemptStatus;
-  started_at: string;
-  history_completed_at: string | null;
-  examination_completed_at: string | null;
-  summary_completed_at: string | null;
-  evaluated_at: string | null;
   total_score: number | null;
   passed: boolean | null;
   created_at: string;
@@ -60,15 +56,11 @@ export interface LongCaseAttemptCreate {
  * Student-writable progression fields only. Scoring fields
  * (`total_score`, `passed`, `evaluated_at`) are intentionally excluded.
  */
-export type LongCaseAttemptProgressionUpdate = Partial<
-  Pick<
-    LongCaseAttempt,
-    "status" | "history_completed_at" | "examination_completed_at" | "summary_completed_at"
-  >
->;
+export interface LongCaseAttemptDetail extends LongCaseAttempt {
+  messages: LongCaseAttemptMessage[];
+}
 
 export interface LongCaseAttemptMessageCreate {
-  sender: MessageSender;
   content: string;
 }
 
@@ -83,7 +75,6 @@ export interface LongCaseAttemptChatRequest {
  
 /** Response of POST /long-case-attempts/{attempt_id}/messages/chat */
 export interface LongCaseAttemptChatResponse {
-  user_message: LongCaseAttemptMessage;
   assistant_message: LongCaseAttemptMessage;
 }
 

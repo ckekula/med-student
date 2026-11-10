@@ -11,7 +11,6 @@ import {
 
 export const MAX_POINTS = 100;
 export const MAX_ITEMS_PER_SECTION = 100;
-const MAX_FEATURE_LENGTH = 200;
 
 const requiredText = (label: string, max: number) =>
   z.string().trim().min(1, `${label} is required`).max(max, `${label} must be at most ${max} characters`);

@@ -4,10 +4,14 @@ import { OSCEStepper } from "@/components/osce/station/osce-stepper";
 import { getLongCaseById } from "@/lib/api/longCase";
 import { createAttempt } from "@/lib/api/longCaseAttempt";
 import { SignupModal } from "@/components/auth/signup-modal";
+import { AttemptStatus } from "@/types/osce/longCaseAttempt";
+import { toChatMessage } from "@/types/osce/historyChat";
 
 interface OSCEStationPageProps {
   params: Promise<{ id: string }>;
 }
+
+const CHAT_STATUSES: readonly AttemptStatus[] = ["started", "in_progress_history"]
 
 export default async function OSCEStationPage({
   params,
@@ -15,6 +19,8 @@ export default async function OSCEStationPage({
   const { id } = await params;
   const { userId, getToken } = await auth();
   const longCase = await getLongCaseById(id);
+  const attempt = userId ? await createAttempt(getToken, { long_case_id: id }) : null
+  const isReadOnly = attempt !== null && !CHAT_STATUSES.includes(attempt.status)
 
   if (!longCase || !longCase.is_active) {
     notFound();
@@ -42,7 +48,12 @@ export default async function OSCEStationPage({
         Introduce yourself to the patient to start the timer.
       </p>
 
-      <OSCEStepper />
+      <OSCEStepper
+        attemptId={attempt?.id ?? null}
+        initialMessages={attempt?.messages.map(toChatMessage) ?? []}
+        isReadOnly={isReadOnly}
+      />
+
     </div>
   );
 }

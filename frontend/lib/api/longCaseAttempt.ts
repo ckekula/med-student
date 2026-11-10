@@ -1,15 +1,13 @@
 import { apiRequest, apiRequestOrNull, type CallOptions, type GetToken } from "@/lib/api/client";
 import type {
   LongCaseAttempt,
-  LongCaseAttemptChatRequest,
-  LongCaseAttemptChatResponse,
   LongCaseAttemptCreate,
+  LongCaseAttemptDetail,
   LongCaseAttemptExaminationSelection,
   LongCaseAttemptExaminationSelectionCreate,
   LongCaseAttemptHistoryResult,
   LongCaseAttemptMessage,
   LongCaseAttemptMessageCreate,
-  LongCaseAttemptProgressionUpdate,
   PaginationParams,
 } from "@/types/osce/longCaseAttempt";
 
@@ -27,10 +25,10 @@ const BASE_PATH = "/long-case-attempts";
 /** Rejects with `ApiError` (status 409) if the student already has an attempt for this case. */
 export function createAttempt(
   getToken: GetToken,
-  payload: LongCaseAttemptCreate,
+  body: LongCaseAttemptCreate,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttempt> {
-  return apiRequest<LongCaseAttempt>(BASE_PATH, { method: "POST", body: payload, getToken, signal });
+): Promise<LongCaseAttemptDetail> {
+  return apiRequest<LongCaseAttemptDetail>(BASE_PATH, { method: "POST", body, getToken, signal });
 }
 
 export function getMyAttempts(
@@ -49,19 +47,19 @@ export function getAttemptById(
   return apiRequestOrNull<LongCaseAttempt>(`${BASE_PATH}/${attemptId}`, { getToken, signal });
 }
 
-export function updateAttemptProgress(
-  getToken: GetToken,
-  attemptId: string,
-  payload: LongCaseAttemptProgressionUpdate,
-  { signal }: CallOptions = {},
-): Promise<LongCaseAttempt> {
-  return apiRequest<LongCaseAttempt>(`${BASE_PATH}/${attemptId}`, {
-    method: "PATCH",
-    body: payload,
-    getToken,
-    signal,
-  });
-}
+// export function updateAttemptProgress(
+//   getToken: GetToken,
+//   attemptId: string,
+//   payload: LongCaseAttemptProgressionUpdate,
+//   { signal }: CallOptions = {},
+// ): Promise<LongCaseAttempt> {
+//   return apiRequest<LongCaseAttempt>(`${BASE_PATH}/${attemptId}`, {
+//     method: "PATCH",
+//     body: payload,
+//     getToken,
+//     signal,
+//   });
+// }
 
 // Messages (append-only transcript)
 
@@ -99,24 +97,14 @@ export function getMessageById(
   });
 }
 
-/**
- * Sends the student's message and returns both the saved user message and the
- * LLM-generated patient reply. This calls an LLM server-side and can take
- * several seconds — pass a `signal` with a generous timeout (or none) rather
- * than the default used for quick CRUD calls elsewhere in this file.
- *
- * The user's message is persisted before the LLM is called, so on a 502 (LLM
- * failure) it is not lost — the caller should surface a retry, which will
- * post as a new message rather than duplicate the one already saved.
- */
 export function sendChatMessage(
   getToken: GetToken,
   attemptId: string,
   content: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptChatResponse> {
-  const body: LongCaseAttemptChatRequest = { content };
-  return apiRequest<LongCaseAttemptChatResponse>(`${BASE_PATH}/${attemptId}/messages/chat`, {
+): Promise<LongCaseAttemptMessage> {
+  const body: LongCaseAttemptMessageCreate = { content };
+  return apiRequest<LongCaseAttemptMessage>(`${BASE_PATH}/${attemptId}/messages`, {
     method: "POST",
     body,
     getToken,

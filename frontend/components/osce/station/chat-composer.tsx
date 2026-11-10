@@ -26,10 +26,12 @@ const isComposerMode = (value: string): value is ComposerMode =>
 
 interface ChatComposerProps {
   isTimeUp: boolean
-  onSend: (content: string) => void
+  isPending: boolean
+  isReadOnly: boolean
+  onSend: (content: string) => Promise<boolean>
 }
 
-export function ChatComposer({ isTimeUp, onSend }: ChatComposerProps) {
+export function ChatComposer({ isTimeUp, onSend, isPending, isReadOnly }: ChatComposerProps) {
   const { isLoaded, isSignedIn } = useAuth()
   const [mode, setMode] = useState<ComposerMode>("history")
   const [draft, setDraft] = useState("")
@@ -38,17 +40,16 @@ export function ChatComposer({ isTimeUp, onSend }: ChatComposerProps) {
   const selectedExamination = EXAMINATION_OPTIONS.find(
     (examination) => examination.value === examinationId,
   )
-  const content =
-    mode === "history" ? draft.trim() : (selectedExamination?.label ?? "")
-  const canSend = isLoaded && !isTimeUp && content.length > 0
+  const content = mode === "history" ? draft.trim() : (selectedExamination?.label ?? "")
 
-  const handleSubmit = () => {
-    if (!canSend) return
-    if (!isSignedIn) return
+  const isLocked = isTimeUp || isReadOnly
+  const canSend = isLoaded && !isLocked && !isPending && mode === "history" && content.length > 0
 
-    onSend(content)
-    if (mode === "history") setDraft("")
-    else setExaminationId("")
+  const handleSubmit = async () => {
+    if (!canSend || !isSignedIn) return
+    const sent = await onSend(content)
+    if (!sent) return // keep the draft so the user can retry
+    setDraft((current) => (current.trim() === content ? "" : current))
   }
 
   return (

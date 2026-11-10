@@ -259,8 +259,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Messages */
-        get: operations["list_messages_api_v1_long_case_attempts__attempt_id__messages_get"];
+        get?: never;
         put?: never;
         /** Create Message */
         post: operations["create_message_api_v1_long_case_attempts__attempt_id__messages_post"];
@@ -675,7 +674,6 @@ export interface components {
         };
         /** LongCaseAttemptMessageCreate */
         LongCaseAttemptMessageCreate: {
-            sender: components["schemas"]["MessageSender"];
             /** Content */
             content: string;
         };
@@ -1002,7 +1000,7 @@ export interface components {
          * MessageSender
          * @enum {string}
          */
-        MessageSender: "user" | "patient";
+        MessageSender: "user" | "ai";
         /** PatientProfileCreate */
         PatientProfileCreate: {
             /** Name */
@@ -2139,37 +2137,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LongCaseAttemptRead"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_messages_api_v1_long_case_attempts__attempt_id__messages_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                attempt_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LongCaseAttemptMessageRead"][];
                 };
             };
             /** @description Validation Error */
