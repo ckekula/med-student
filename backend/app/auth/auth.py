@@ -11,8 +11,7 @@ settings = get_settings()
 bearer_scheme = HTTPBearer(auto_error=False)
 credentials = Depends(bearer_scheme)
 
-ADMIN_ORG_ROLE = "org:admin"
-
+ADMIN_ROLE = "admin"
 
 @lru_cache
 def _jwks_client() -> PyJWKClient:
@@ -42,7 +41,7 @@ async def get_current_token_payload(
             options={"verify_aud": bool(settings.CLERK_AUDIENCE)},
         )
     except (jwt.PyJWTError, httpx.HTTPError) as exc:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, f"Invalid token: {exc}") from exc
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token") from exc
 
     return payload
 
@@ -67,6 +66,6 @@ async def require_org_admin(
     Use on content-management routes (long cases and their nested resources).
     """
     org = payload.get("o") or {}
-    if org.get("rol") != "admin":
+    if org.get("rol") != ADMIN_ROLE:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin access required")
     return payload

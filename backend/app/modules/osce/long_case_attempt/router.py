@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 
 from app.dependencies import AdminUser, CurrentDbUser, DbSession
 from app.modules.osce.long_case.models import LongCase
-from app.modules.osce.long_case_attempt.enums import MessageSender
+from app.modules.osce.long_case_attempt.enums import AttemptStatus, MessageSender
 from app.modules.osce.long_case_attempt.llm_chat import generate_patient_reply
 from app.modules.osce.long_case_attempt.models import (
     LongCaseAttempt,
@@ -59,7 +59,7 @@ async def create_attempt(payload: LongCaseAttemptCreate, db: DbSession, user: Cu
     attempt = LongCaseAttempt(
         user_id=user.id,
         long_case_id=payload.long_case_id,
-        started_at=datetime.now(UTC),
+        status=AttemptStatus.STARTED,
     )
     db.add(attempt)
     try:

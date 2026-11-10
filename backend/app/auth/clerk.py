@@ -5,7 +5,8 @@ from app.config import get_settings
 from app.db.session import get_db
 from app.modules.user.models import User
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from sqlalchemy import select
+from sqlalchemy import update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from svix.webhooks import Webhook, WebhookVerificationError
 
@@ -51,24 +52,24 @@ async def clerk_webhook(request: Request, db: AsyncSession = DbSession) -> None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Event missing user id")
 
     if event_type in ("user.created", "user.updated"):
-        result = await db.execute(select(User).where(User.clerk_id == clerk_id))
-        user = result.scalar_one_or_none()
-        if user is None:
-            user = User(clerk_id=clerk_id)
-            db.add(user)
-        user.email = _primary_email(data)
-        user.first_name = data.get("first_name")
-        user.last_name = data.get("last_name")
-        user.image_url = data.get("image_url")
-        user.is_active = True
+        values = {
+            "clerk_id": clerk_id,
+            "email": _primary_email(data),
+            "first_name": data.get("first_name"),
+            "last_name": data.get("last_name"),
+            "image_url": data.get("image_url"),
+        }
+        stmt = insert(User).values(**values)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=[User.clerk_id],
+            set_={k: v for k, v in values.items() if k != "clerk_id"},
+        )
+        await db.execute(stmt)
         await db.commit()
 
     elif event_type == "user.deleted":
-        result = await db.execute(select(User).where(User.clerk_id == clerk_id))
-        user = result.scalar_one_or_none()
-        if user is not None:
-            user.is_active = False
-            await db.commit()
+        await db.execute(update(User).where(User.clerk_id == clerk_id).values(is_active=False))
+        await db.commit()
 
     else:
         logger.info("Unhandled Clerk webhook event type: %s", event_type)
