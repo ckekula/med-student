@@ -403,7 +403,7 @@ export interface components {
          * AttemptStatus
          * @enum {string}
          */
-        AttemptStatus: "in_progress_history" | "history_complete" | "in_progress_examination" | "examination_complete" | "summary_complete" | "evaluated";
+        AttemptStatus: "started" | "in_progress_history" | "history_complete" | "in_progress_summary" | "summary_complete" | "evaluated";
         /** DifferentialDiagnosisRead */
         DifferentialDiagnosisRead: {
             /** Primary Diagnosis */
@@ -713,29 +713,16 @@ export interface components {
              */
             id: string;
             /**
-             * Student Id
+             * User Id
              * Format: uuid
              */
-            student_id: string;
+            user_id: string;
             /**
              * Long Case Id
              * Format: uuid
              */
             long_case_id: string;
             status: components["schemas"]["AttemptStatus"];
-            /**
-             * Started At
-             * Format: date-time
-             */
-            started_at: string;
-            /** History Completed At */
-            history_completed_at: string | null;
-            /** Examination Completed At */
-            examination_completed_at: string | null;
-            /** Summary Completed At */
-            summary_completed_at: string | null;
-            /** Evaluated At */
-            evaluated_at: string | null;
             /** Total Score */
             total_score: number | null;
             /**
@@ -751,18 +738,10 @@ export interface components {
         };
         /**
          * LongCaseAttemptUpdate
-         * @description Progression/evaluation fields. student_id and long_case_id are immutable after creation.
+         * @description Progression/evaluation fields. user_id and long_case_id are immutable after creation.
          */
         LongCaseAttemptUpdate: {
             status?: components["schemas"]["AttemptStatus"] | null;
-            /** History Completed At */
-            history_completed_at?: string | null;
-            /** Examination Completed At */
-            examination_completed_at?: string | null;
-            /** Summary Completed At */
-            summary_completed_at?: string | null;
-            /** Evaluated At */
-            evaluated_at?: string | null;
             /** Total Score */
             total_score?: number | null;
         };
@@ -1023,7 +1002,7 @@ export interface components {
          * MessageSender
          * @enum {string}
          */
-        MessageSender: "student" | "patient";
+        MessageSender: "user" | "patient";
         /** PatientProfileCreate */
         PatientProfileCreate: {
             /** Name */

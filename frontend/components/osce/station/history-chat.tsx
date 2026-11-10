@@ -52,20 +52,20 @@ export default function HistoryChat({
   isTimeUp,
 }: HistoryChatProps) {
 
-const handleSend = React.useCallback(
-  (content: string) => {
-    if (!content || isTimeUp) return
+  const handleSend = React.useCallback(
+    (content: string) => {
+      if (!content || isTimeUp) return
 
-    onSendMessage({
-      id: crypto.randomUUID(),
-      role: "user",
-      content,
-      avatarSrc: "/avatars/10.png",
-      avatarFallback: "R",
-    })
-  },
-  [isTimeUp, onSendMessage]
-)
+      onSendMessage({
+        id: crypto.randomUUID(),
+        role: "user",
+        content,
+        avatarSrc: "/avatars/10.png",
+        avatarFallback: "R",
+      })
+    },
+    [isTimeUp, onSendMessage]
+  )
 
   const groups = groupMessages(messages)
 

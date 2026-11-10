@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { SignUpButton, useAuth } from "@clerk/nextjs"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { EXAMINATION_OPTIONS } from "@/lib/osce/longCaseOptions"
 
 const COMPOSER_MODES = ["history", "examinations"] as const
 type ComposerMode = (typeof COMPOSER_MODES)[number]
@@ -18,14 +20,6 @@ const MODE_LABELS: Record<ComposerMode, string> = {
   history: "History",
   examinations: "Examinations",
 }
-
-// TODO: replace with real data
-const EXAMINATIONS = [
-  { id: "exam-cbc", name: "Complete Blood Count" },
-  { id: "exam-lft", name: "Liver Function Test" },
-  { id: "exam-ecg", name: "Electrocardiogram" },
-  { id: "exam-cxr", name: "Chest X-Ray" },
-] as const
 
 const isComposerMode = (value: string): value is ComposerMode =>
   (COMPOSER_MODES as readonly string[]).includes(value)
@@ -36,17 +30,22 @@ interface ChatComposerProps {
 }
 
 export function ChatComposer({ isTimeUp, onSend }: ChatComposerProps) {
+  const { isLoaded, isSignedIn } = useAuth()
   const [mode, setMode] = useState<ComposerMode>("history")
   const [draft, setDraft] = useState("")
   const [examinationId, setExaminationId] = useState("")
 
-  const selectedExamination = EXAMINATIONS.find((e) => e.id === examinationId)
+  const selectedExamination = EXAMINATION_OPTIONS.find(
+    (examination) => examination.value === examinationId,
+  )
   const content =
-    mode === "history" ? draft.trim() : (selectedExamination?.name ?? "")
-  const canSend = !isTimeUp && content.length > 0
+    mode === "history" ? draft.trim() : (selectedExamination?.label ?? "")
+  const canSend = isLoaded && !isTimeUp && content.length > 0
 
   const handleSubmit = () => {
     if (!canSend) return
+    if (!isSignedIn) return
+
     onSend(content)
     if (mode === "history") setDraft("")
     else setExaminationId("")
@@ -107,18 +106,26 @@ export function ChatComposer({ isTimeUp, onSend }: ChatComposerProps) {
               />
             </SelectTrigger>
             <SelectContent>
-              {EXAMINATIONS.map((exam) => (
-                <SelectItem key={exam.id} value={exam.id}>
-                  {exam.name}
+              {EXAMINATION_OPTIONS.map((exam) => (
+                <SelectItem key={exam.value} value={exam.value}>
+                  {exam.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         )}
 
-        <Button type="submit" disabled={!canSend}>
-          Send
-        </Button>
+        {isSignedIn ? (
+          <Button type="submit" disabled={!canSend}>
+            Send
+          </Button>
+        ) : (
+          <SignUpButton mode="modal">
+            <Button type="submit" disabled={!canSend}>
+              Send
+            </Button>
+          </SignUpButton>
+        )}
       </div>
     </form>
   )

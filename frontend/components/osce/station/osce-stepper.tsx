@@ -25,11 +25,8 @@ const MAX_TIME_LIMIT_SECONDS = 60 * 60
 const TIME_STEP_SECONDS = 60
 
 export function OSCEStepper() {
-  const [durationSeconds, setDurationSeconds] = React.useState(
-    DEFAULT_TIME_LIMIT_SECONDS
-  )
-  const { timeLeft, isRunning, isExpired, start } =
-    useCountdown(durationSeconds)
+  const [durationSeconds, setDurationSeconds] = React.useState(DEFAULT_TIME_LIMIT_SECONDS)
+  const { timeLeft, isRunning, isExpired, start } = useCountdown(durationSeconds)
 
   const adjustDuration = React.useCallback((deltaSeconds: number) => {
     setDurationSeconds((current) =>
