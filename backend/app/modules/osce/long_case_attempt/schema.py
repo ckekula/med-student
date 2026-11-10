@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 
 from app.modules.osce.long_case_attempt.enums import *
 from app.modules.osce.schema import ORMBase
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 
 # LongCaseAttempt
@@ -30,8 +31,7 @@ class LongCaseAttemptRead(ORMBase):
 
 # LongCaseAttemptMessage — append-only chat transcript (no update endpoint)
 class LongCaseAttemptMessageCreate(BaseModel):
-    sender: MessageSender
-    content: str
+    content: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)]
 
 
 class LongCaseAttemptMessageRead(ORMBase):

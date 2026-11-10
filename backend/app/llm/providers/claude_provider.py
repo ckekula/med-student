@@ -15,5 +15,7 @@ class ClaudeProvider(ChatProvider):
             model=model_name,
             api_key=settings.ANTHROPIC_API_KEY,
             temperature=kwargs.pop("temperature", 0.7),
+            timeout=settings.LLM_TIMEOUT_SECONDS,
+            max_retries=settings.LLM_MAX_RETRIES,
             **kwargs,
         )

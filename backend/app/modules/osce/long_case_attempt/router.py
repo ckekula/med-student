@@ -2,9 +2,9 @@ import uuid
 from datetime import UTC, datetime
 
 from app.dependencies import AdminUser, CurrentDbUser, DbSession
+from app.llm.exceptions import LLMError, LLMTimeoutError
 from app.modules.osce.long_case.models import LongCase
 from app.modules.osce.long_case_attempt.enums import AttemptStatus, MessageSender
-from app.modules.osce.long_case_attempt.llm_chat import generate_patient_reply
 from app.modules.osce.long_case_attempt.models import (
     LongCaseAttempt,
     LongCaseAttemptExaminationSelection,
@@ -25,9 +25,12 @@ from app.modules.osce.long_case_attempt.schema import (
     LongCaseAttemptRead,
     LongCaseAttemptUpdate,
 )
+from app.modules.osce.long_case_attempt.service import generate_patient_reply
+from app.modules.user.models import User
 from fastapi import APIRouter, HTTPException, Query, logger, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/long-case-attempts", tags=["Long Case Attempts"])
@@ -106,29 +109,65 @@ async def delete_attempt(attempt_id: uuid.UUID, db: DbSession, admin: AdminUser)
 
 
 # LongCaseAttemptMessage — append-only chat transcript
+
+_CHAT_STATUSES = {AttemptStatus.STARTED, AttemptStatus.IN_PROGRESS_HISTORY}
+
+async def _get_own_attempt_for_chat(db: AsyncSession, user: User, attempt_id: uuid.UUID) -> LongCaseAttempt:
+    """Loads and row-locks the attempt with everything the chat needs."""
+    stmt = (
+        select(LongCaseAttempt)
+        .where(LongCaseAttempt.id == attempt_id, LongCaseAttempt.user_id == user.id)
+        .options(
+            selectinload(LongCaseAttempt.messages),
+            selectinload(LongCaseAttempt.long_case).options(
+                selectinload(LongCase.patient_profile),
+                selectinload(LongCase.history_items),
+                selectinload(LongCase.investigations),
+            ),
+        )
+        .with_for_update(of=LongCaseAttempt)
+    )
+    attempt = (await db.execute(stmt)).scalar_one_or_none()
+    if attempt is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Attempt not found")
+    return attempt
+
 @router.post(
     "/{attempt_id}/messages",
     response_model=LongCaseAttemptMessageRead,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_message(attempt_id: uuid.UUID, payload: LongCaseAttemptMessageCreate, db: DbSession, user: CurrentDbUser):
-    await _get_own_attempt_or_404(db, user, attempt_id)
-    message = LongCaseAttemptMessage(attempt_id=attempt_id, **payload.model_dump())
-    db.add(message)
-    await db.commit()
-    await db.refresh(message)
-    return message
+async def create_message(
+    attempt_id: uuid.UUID, payload: LongCaseAttemptMessageCreate, db: DbSession, user: CurrentDbUser
+):
+    attempt = await _get_own_attempt_for_chat(db, user, attempt_id)
+    if attempt.status not in _CHAT_STATUSES:
+        raise HTTPException(status.HTTP_409_CONFLICT, "This attempt is no longer accepting history messages")
 
-
-@router.get("/{attempt_id}/messages", response_model=list[LongCaseAttemptMessageRead])
-async def list_messages(attempt_id: uuid.UUID, db: DbSession, user: CurrentDbUser):
-    await _get_own_attempt_or_404(db, user, attempt_id)
-    result = await db.execute(
-        select(LongCaseAttemptMessage)
-        .where(LongCaseAttemptMessage.attempt_id == attempt_id)
-        .order_by(LongCaseAttemptMessage.created_at)
+    user_message = LongCaseAttemptMessage(
+        attempt_id=attempt.id,
+        sender=MessageSender.USER,
+        content=payload.content,
+        created_at=datetime.now(UTC),
     )
-    return result.scalars().all()
+    try:
+        reply = await generate_patient_reply(attempt.long_case, [*attempt.messages, user_message])
+    except LLMTimeoutError as exc:
+        raise HTTPException(status.HTTP_504_GATEWAY_TIMEOUT, "The patient took too long to respond. Please retry.") from exc
+    except LLMError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, "The patient could not respond. Please retry.") from exc
+
+    patient_message = LongCaseAttemptMessage(
+        attempt_id=attempt.id,
+        sender=MessageSender.PATIENT,
+        content=reply,
+        created_at=datetime.now(UTC),  # taken after the LLM call, so strictly later
+    )
+    attempt.status = AttemptStatus.IN_PROGRESS_HISTORY
+    db.add_all([user_message, patient_message])
+    await db.commit()
+    await db.refresh(patient_message)
+    return patient_message
 
 
 @router.get("/{attempt_id}/messages/{message_id}", response_model=LongCaseAttemptMessageRead)

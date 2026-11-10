@@ -14,14 +14,21 @@ class ChatProvider(ABC):
 
     provider_name: str
 
+    def __init__(self) -> None:
+        self._model_cache: dict[str, BaseChatModel] = {}
+
     @abstractmethod
-    def build(self, model_name: str, **kwargs) -> BaseChatModel:
-        """Return a configured LangChain chat model for `model_name`."""
-        raise NotImplementedError
+    def build(self, model_name: str, **kwargs) -> BaseChatModel: ...
+
+    def _get_model(self, model_name: str, **kwargs) -> BaseChatModel:
+        if kwargs:  # custom params: don't cache
+            return self.build(model_name, **kwargs)
+        if model_name not in self._model_cache:
+            self._model_cache[model_name] = self.build(model_name)
+        return self._model_cache[model_name]
 
     async def generate(
         self, model_name: str, messages: list[BaseMessage], **kwargs
-    ) -> str:
-        llm = self.build(model_name, **kwargs)
-        result = await llm.ainvoke(messages)
+    ) -> str | list[str | dict]:
+        result = await self._get_model(model_name, **kwargs).ainvoke(messages)
         return result.content

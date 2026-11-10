@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from app.llm.base import ChatProvider
 from app.llm.providers.claude_provider import ClaudeProvider
 from app.llm.providers.gemini_provider import GeminiProvider
@@ -17,10 +19,12 @@ _PROVIDERS: dict[str, type[ChatProvider]] = {
 }
 
 
+@lru_cache
 def get_provider(provider_name: str) -> ChatProvider:
     try:
-        return _PROVIDERS[provider_name]()
+        factory = _PROVIDERS[provider_name]
     except KeyError as exc:
         raise UnsupportedProviderError(
             f"Unknown provider '{provider_name}'. Available: {list(_PROVIDERS)}"
         ) from exc
+    return factory()

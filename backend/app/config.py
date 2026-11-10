@@ -56,8 +56,12 @@ class Settings(BaseSettings):
     HF_MODELS_DIR: str = "./hf_models"
     HF_DEVICE: Literal["cuda", "cpu", "mps"] = "cpu"
 
-    DEFAULT_LLM_PROVIDER: str = "openai"
-    DEFAULT_LLM_MODEL: str = "gpt-4o"
+    DEFAULT_LLM_PROVIDER: str = "google"
+    DEFAULT_LLM_MODEL: str = "gemini-3.5-flash-lite"
+
+    LLM_TIMEOUT_SECONDS: int = 30
+    LLM_MAX_RETRIES: int = 1
+    LLM_MAX_HISTORY_MESSAGES: int = 40
 
     @model_validator(mode="after")
     def _validate_security(self) -> Self:
