@@ -36,7 +36,7 @@ def _to_langchain_messages(system_prompt: str, history: list[LongCaseAttemptMess
     for message in history:
         if message.sender == MessageSender.USER:
             messages.append(HumanMessage(content=message.content))
-        elif message.sender == MessageSender.PATIENT:
+        elif message.sender == MessageSender.AI:
             messages.append(AIMessage(content=message.content))
         else:
             raise ValueError(f"Unsupported sender: {message.sender!r}")

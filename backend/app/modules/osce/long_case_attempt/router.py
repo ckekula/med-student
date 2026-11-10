@@ -159,7 +159,7 @@ async def create_message(
 
     patient_message = LongCaseAttemptMessage(
         attempt_id=attempt.id,
-        sender=MessageSender.PATIENT,
+        sender=MessageSender.AI,
         content=reply,
         created_at=datetime.now(UTC),  # taken after the LLM call, so strictly later
     )
@@ -338,7 +338,7 @@ async def send_chat_message(
             "Failed to generate a reply. Your message was saved — please try sending again.",
         ) from exc
 
-    assistant_message = LongCaseAttemptMessage(attempt_id=attempt_id, sender=MessageSender.PATIENT, content=reply_content)
+    assistant_message = LongCaseAttemptMessage(attempt_id=attempt_id, sender=MessageSender.AI, content=reply_content)
     db.add(assistant_message)
     await db.commit()
     await db.refresh(assistant_message)

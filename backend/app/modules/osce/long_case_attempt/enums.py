@@ -17,7 +17,7 @@ class AttemptStatus(Enum):
 
 class MessageSender(Enum):
     USER = "user"
-    PATIENT = "patient"
+    AI = "ai"
 
 
 class EvaluationMethod(Enum):
