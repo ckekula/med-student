@@ -43,6 +43,10 @@ class LongCaseAttemptMessageRead(ORMBase):
     updated_at: datetime
 
 
+class LongCaseAttemptDetailRead(LongCaseAttemptRead):
+    messages: list[LongCaseAttemptMessageRead]
+
+
 # LongCaseAttemptExaminationSelection — no update endpoint
 class LongCaseAttemptExaminationSelectionCreate(BaseModel):
     query_text: str

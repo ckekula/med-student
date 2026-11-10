@@ -15,6 +15,7 @@ from app.modules.osce.long_case_attempt.schema import (
     LongCaseAttemptChatRequest,
     LongCaseAttemptChatResponse,
     LongCaseAttemptCreate,
+    LongCaseAttemptDetailRead,
     LongCaseAttemptExaminationSelectionCreate,
     LongCaseAttemptExaminationSelectionRead,
     LongCaseAttemptHistoryResultCreate,
@@ -27,8 +28,9 @@ from app.modules.osce.long_case_attempt.schema import (
 )
 from app.modules.osce.long_case_attempt.service import generate_patient_reply
 from app.modules.user.models import User
-from fastapi import APIRouter, HTTPException, Query, logger, status
+from fastapi import APIRouter, HTTPException, Query, Response, logger, status
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -53,24 +55,34 @@ async def _get_nested_or_404(db: DbSession, model, attempt_id: uuid.UUID, item_i
 
 
 # LongCaseAttempt
-@router.post("", response_model=LongCaseAttemptRead, status_code=status.HTTP_201_CREATED)
-async def create_attempt(payload: LongCaseAttemptCreate, db: DbSession, user: CurrentDbUser):
+@router.post("", response_model=LongCaseAttemptDetailRead, status_code=status.HTTP_201_CREATED)
+async def create_attempt(payload: LongCaseAttemptCreate, response: Response, db: DbSession, user: CurrentDbUser):
+    """Creates the user's attempt for a case, or returns the existing one (200)."""
     long_case = await db.get(LongCase, payload.long_case_id)
     if long_case is None or not long_case.is_active:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Long case not found")
 
-    attempt = LongCaseAttempt(
-        user_id=user.id,
-        long_case_id=payload.long_case_id,
-        status=AttemptStatus.STARTED,
+    inserted = await db.execute(
+        insert(LongCaseAttempt)
+        .values(user_id=user.id, long_case_id=payload.long_case_id, status=AttemptStatus.STARTED)
+        .on_conflict_do_nothing(constraint="uq_user_long_case_attempt")
+        .returning(LongCaseAttempt.id)
     )
-    db.add(attempt)
-    try:
-        await db.commit()
-    except IntegrityError as exc:
-        await db.rollback()
-        raise HTTPException(status.HTTP_409_CONFLICT, "An attempt for this long case already exists") from exc
-    await db.refresh(attempt)
+    created = inserted.scalar_one_or_none() is not None
+    await db.commit()
+    if not created:
+        response.status_code = status.HTTP_200_OK
+
+    attempt = (
+        await db.execute(
+            select(LongCaseAttempt)
+            .where(
+                LongCaseAttempt.user_id == user.id,
+                LongCaseAttempt.long_case_id == payload.long_case_id,
+            )
+            .options(selectinload(LongCaseAttempt.messages))
+        )
+    ).scalar_one()
     return attempt
 
 

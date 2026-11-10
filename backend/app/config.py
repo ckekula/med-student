@@ -56,8 +56,8 @@ class Settings(BaseSettings):
     HF_MODELS_DIR: str = "./hf_models"
     HF_DEVICE: Literal["cuda", "cpu", "mps"] = "cpu"
 
-    DEFAULT_LLM_PROVIDER: str = "google"
-    DEFAULT_LLM_MODEL: str = "gemini-3.5-flash-lite"
+    DEFAULT_LLM_PROVIDER: str | None = None
+    DEFAULT_LLM_MODEL: str | None = None
 
     LLM_TIMEOUT_SECONDS: int = 30
     LLM_MAX_RETRIES: int = 1
