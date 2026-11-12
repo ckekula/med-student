@@ -21,8 +21,12 @@ import { useState } from "react";
 
 const navItems = [
   {
-    name: "OSCE",
+    name: "CASES",
     link: "/osce",
+  },
+  {
+    name: "QUESTIONS",
+    link: "/questions",
   },
   {
     name: "NOTES",
@@ -32,17 +36,13 @@ const navItems = [
     name: "SHOP",
     link: "/shop",
   },
-  {
-    name: "BLOG",
-    link: "/blog",
-  },
 ];
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <Navbar className="mb-20">
+    <Navbar className="">
       {/* Desktop */}
       <NavBody className="px-8 py-6">
         <Link href="/" className="z-100 flex h-10 items-center cursor-pointer">

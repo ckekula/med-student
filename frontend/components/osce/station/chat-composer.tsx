@@ -31,10 +31,12 @@ interface ChatComposerProps {
   onSend: (content: string) => Promise<boolean>
 }
 
+const initialDraft = "මම වෛද්‍ය සිසුවෙක්. ඔබෙන් ප්‍රශ්න ටිකක් ඇහුවට කමක් නැද්ද?"
+
 export function ChatComposer({ isTimeUp, onSend, isPending, isReadOnly }: ChatComposerProps) {
   const { isLoaded, isSignedIn } = useAuth()
   const [mode, setMode] = useState<ComposerMode>("history")
-  const [draft, setDraft] = useState("")
+  const [draft, setDraft] = useState(initialDraft)
   const [examinationId, setExaminationId] = useState("")
 
   const selectedExamination = EXAMINATION_OPTIONS.find(
@@ -66,7 +68,12 @@ export function ChatComposer({ isTimeUp, onSend, isPending, isReadOnly }: ChatCo
       >
         <TabsList className="w-fit">
           {COMPOSER_MODES.map((value) => (
-            <TabsTrigger key={value} value={value} disabled={isTimeUp} className="cursor-pointer">
+            <TabsTrigger
+              key={value}
+              value={value}
+              disabled={isTimeUp || !canSend || !isSignedIn}
+              className="cursor-pointer"
+            >
               {MODE_LABELS[value]}
             </TabsTrigger>
           ))}

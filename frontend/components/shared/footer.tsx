@@ -2,10 +2,10 @@ import Link from "next/link";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const footerLinks = [
-  { title: "OSCE Stations", href: "/osce-stations" },
-  { title: "Question Bank", href: "/question-bank" },
-  { title: "Virtual Patients", href: "/virtual-patients" },
-  { title: "Notes", href: "/notes" },
+  { title: "About", href: "/about" },
+  { title: "Contact", href: "/contact" },
+  { title: "Blog", href: "/blog" },
+  { title: "Pricing", href: "/pricing" },
 ];
 
 export default function Footer() {

@@ -1,3 +1,4 @@
+import { mockLongCases } from "@/components/osce/cases";
 import { LongCaseBrowser } from "@/components/osce/long-case-browser";
 import { getLongCases } from "@/lib/api/longCase";
 
@@ -5,6 +6,7 @@ export const dynamic = "force-dynamic"; // stops docker from trying to pre-rende
 
 export default async function OSCEPage() {
   const longCases = (await getLongCases());
+  const allLongCases = longCases.concat(mockLongCases);
 
   return (
     <div className="w-full flex flex-col items-center justify-center mb-20">
@@ -20,9 +22,9 @@ export default async function OSCEPage() {
         </span>
       </p>
 
-      {longCases.length === 0 ? (
+      {allLongCases.length === 0 ? (
         <p className="text-lg">No active OSCE stations available.</p>
-      ): <LongCaseBrowser longCases={longCases} />}
+      ): <LongCaseBrowser longCases={allLongCases} />}
     </div>
   );
 }

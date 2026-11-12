@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ClerkProvider } from '@clerk/nextjs'
 import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
+import AnnouncementBar from "@/components/shared/announcement-bar";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -24,8 +25,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={cn("h-full", "antialiased", montserrat.className, "font-sans", inter.variable)}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-gray-50">
         <ClerkProvider>
+          <AnnouncementBar />
           <div className="w-7xl mx-auto px-8">
             <Header />
             {children}

@@ -1,7 +1,7 @@
 import type { LongCase } from "@/types/osce/longCase";
 
 // Please take a focused history, perform an appropriate examination, and be ready to discuss the case afterwards.
-export const cards: readonly LongCase[] = [
+export const mockLongCases: readonly LongCase[] = [
   {
     id: "1",
     title: "Breast lump",
