@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SPECIALTY } from "@/types/api-enums.generated";
+import { SPECIALTY } from "@medstudent/api-types/enums";
 import type { LongCaseListParams } from "@/types/osce/longCase";
 
 export const LONG_CASES_PATH = "/long-cases";

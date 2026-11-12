@@ -15,7 +15,7 @@ import {
   EXAMINATION_NAME,
   HISTORY_ITEM_CATEGORY,
   INVESTIGATION_NAME,
-} from "@/types/api-enums.generated";
+} from "@medstudent/api-types/enums";
 import type { LongCaseDetail, LongCaseWritePayload, PatientProfileInput } from "@/types/osce/longCase";
 
 // Form defaults

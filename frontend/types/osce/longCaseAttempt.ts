@@ -1,4 +1,4 @@
-import { ATTEMPT_STATUS, EVALUATION_METHOD, MESSAGE_SENDER } from "../api-enums.generated";
+import { ATTEMPT_STATUS, EVALUATION_METHOD, MESSAGE_SENDER } from "@medstudent/api-types/enums";
 
 export type AttemptStatus = (typeof ATTEMPT_STATUS)[number]
 export type MessageSender = (typeof MESSAGE_SENDER)[number]

@@ -1,3 +1,4 @@
 mozilla/
 documents/
 .env
+node_modules/

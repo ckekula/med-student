@@ -37,14 +37,14 @@ export interface CallOptions {
 }
 
 function getBaseUrl(): string {
-  const API_BASE_URL =
-  typeof window === "undefined"
-    ? (process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL)
-    : process.env.NEXT_PUBLIC_API_URL;
-  if (!API_BASE_URL) {
-    throw new Error("API_BASE_URL is not configured");
+  // Browser: same-origin, handled by the app/api/v1/[...path] proxy route.
+  if (typeof window !== "undefined") return "/api/v1";
+
+  const base = process.env.API_URL;
+  if (!base) {
+    throw new Error("API_URL is not configured");
   }
-  return `${API_BASE_URL.replace(/\/+$/, "")}/api/v1`;
+  return `${base.replace(/\/+$/, "")}/api/v1`;
 }
 
 function buildUrl(path: string, query?: QueryParams): string {

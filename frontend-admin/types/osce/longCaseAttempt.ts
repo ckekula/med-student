@@ -1,12 +1,13 @@
-// TODO: replace with the values of the backend enums.
-export type AttemptStatus = "not_started" | "in_progress" | "completed" | "evaluated";
-export type MessageSender = "student" | "system";
-export type EvaluationMethod = "manual" | "automated";
+import { ATTEMPT_STATUS, EVALUATION_METHOD, MESSAGE_SENDER } from "@medstudent/api-types/enums";
+
+export type AttemptStatus = (typeof ATTEMPT_STATUS)[number]
+export type MessageSender = (typeof MESSAGE_SENDER)[number]
+export type EvaluationMethod = (typeof EVALUATION_METHOD)[number]
 
 // Entities (field names mirror the backend's snake_case responses)
 export interface LongCaseAttempt {
   id: string;
-  student_id: string;
+  user_id: string;
   long_case_id: string;
   status: AttemptStatus;
   started_at: string;
