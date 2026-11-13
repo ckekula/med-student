@@ -7,7 +7,7 @@ import {
   LONG_CASE_CATEGORY,
   SEX,
   SPECIALTY
-} from "@medstudent/api-types/enums";
+} from "@/types/api-enums.generated";
 
 export const MAX_POINTS = 100;
 export const MAX_ITEMS_PER_SECTION = 100;

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { HISTORY_ITEM_CATEGORY_LABELS } from "@/lib/osce/longCaseOptions";
-import { HISTORY_ITEM_CATEGORY } from "@medstudent/api-types/enums";
+import { HISTORY_ITEM_CATEGORY } from "@/types/api-enums.generated";
 import type { LongCaseDetail, PatientProfile } from "@/types/osce/longCase";
 
 const formatPoints = (points: number) => `${points} ${points === 1 ? "pt" : "pts"}`;

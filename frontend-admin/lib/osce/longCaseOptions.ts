@@ -12,7 +12,7 @@ import {
   LONG_CASE_CATEGORY,
   SEX,
   SPECIALTY
-} from "@medstudent/api-types/enums";
+} from "@/types/api-enums.generated";
 
 export interface Option<T extends string> {
   readonly value: T;

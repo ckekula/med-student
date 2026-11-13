@@ -1,7 +1,0 @@
-{
-  "private": true,
-  "packageManager": "pnpm@11.24.0",
-  "scripts": {
-    "api:types": "pnpm --filter @medstudent/api-types run generate"
-  }
-}
