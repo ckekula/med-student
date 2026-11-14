@@ -225,7 +225,10 @@ export interface paths {
         /** List My Attempts */
         get: operations["list_my_attempts_api_v1_long_case_attempts_get"];
         put?: never;
-        /** Create Attempt */
+        /**
+         * Create Attempt
+         * @description Creates the user's attempt for a case, or returns the existing one (200).
+         */
         post: operations["create_attempt_api_v1_long_case_attempts_post"];
         delete?: never;
         options?: never;
@@ -565,6 +568,39 @@ export interface components {
              * Format: uuid
              */
             long_case_id: string;
+        };
+        /** LongCaseAttemptDetailRead */
+        LongCaseAttemptDetailRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /**
+             * Long Case Id
+             * Format: uuid
+             */
+            long_case_id: string;
+            status: components["schemas"]["AttemptStatus"];
+            /** Total Score */
+            total_score: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Messages */
+            messages: components["schemas"]["LongCaseAttemptMessageRead"][];
         };
         /** LongCaseAttemptExaminationSelectionCreate */
         LongCaseAttemptExaminationSelectionCreate: {
@@ -1007,7 +1043,7 @@ export interface components {
             name?: string | null;
             /** Age */
             age?: number | null;
-            sex: components["schemas"]["Sex"];
+            sex?: components["schemas"]["Sex"] | null;
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -1025,7 +1061,7 @@ export interface components {
             name?: string | null;
             /** Age */
             age?: number | null;
-            sex: components["schemas"]["Sex"];
+            sex?: components["schemas"]["Sex"] | null;
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -2041,7 +2077,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LongCaseAttemptRead"];
+                    "application/json": components["schemas"]["LongCaseAttemptDetailRead"];
                 };
             };
             /** @description Validation Error */

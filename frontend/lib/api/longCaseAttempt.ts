@@ -1,12 +1,12 @@
 import { apiRequest, apiRequestOrNull, type CallOptions, type GetToken } from "@/lib/api/client";
 import type {
-  LongCaseAttempt,
+  LongCaseAttemptRead,
   LongCaseAttemptCreate,
   LongCaseAttemptDetail,
-  LongCaseAttemptExaminationSelection,
+  LongCaseAttemptExaminationSelectionRead,
   LongCaseAttemptExaminationSelectionCreate,
-  LongCaseAttemptHistoryResult,
-  LongCaseAttemptMessage,
+  LongCaseAttemptHistoryResultRead,
+  LongCaseAttemptMessageRead,
   LongCaseAttemptMessageCreate,
   PaginationParams,
 } from "@/types/osce/longCaseAttempt";
@@ -35,16 +35,16 @@ export function getMyAttempts(
   getToken: GetToken,
   params: PaginationParams = {},
   { signal }: CallOptions = {},
-): Promise<LongCaseAttempt[]> {
-  return apiRequest<LongCaseAttempt[]>(BASE_PATH, { query: { ...params }, getToken, signal });
+): Promise<LongCaseAttemptRead[]> {
+  return apiRequest<LongCaseAttemptRead[]>(BASE_PATH, { query: { ...params }, getToken, signal });
 }
 
 export function getAttemptById(
   getToken: GetToken,
   attemptId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttempt | null> {
-  return apiRequestOrNull<LongCaseAttempt>(`${BASE_PATH}/${attemptId}`, { getToken, signal });
+): Promise<LongCaseAttemptRead | null> {
+  return apiRequestOrNull<LongCaseAttemptRead>(`${BASE_PATH}/${attemptId}`, { getToken, signal });
 }
 
 // export function updateAttemptProgress(
@@ -68,8 +68,8 @@ export function createMessage(
   attemptId: string,
   payload: LongCaseAttemptMessageCreate,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptMessage> {
-  return apiRequest<LongCaseAttemptMessage>(`${BASE_PATH}/${attemptId}/messages`, {
+): Promise<LongCaseAttemptMessageRead> {
+  return apiRequest<LongCaseAttemptMessageRead>(`${BASE_PATH}/${attemptId}/messages`, {
     method: "POST",
     body: payload,
     getToken,
@@ -81,8 +81,8 @@ export function getMessages(
   getToken: GetToken,
   attemptId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptMessage[]> {
-  return apiRequest<LongCaseAttemptMessage[]>(`${BASE_PATH}/${attemptId}/messages`, { getToken, signal });
+): Promise<LongCaseAttemptMessageRead[]> {
+  return apiRequest<LongCaseAttemptMessageRead[]>(`${BASE_PATH}/${attemptId}/messages`, { getToken, signal });
 }
 
 export function getMessageById(
@@ -90,8 +90,8 @@ export function getMessageById(
   attemptId: string,
   messageId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptMessage | null> {
-  return apiRequestOrNull<LongCaseAttemptMessage>(`${BASE_PATH}/${attemptId}/messages/${messageId}`, {
+): Promise<LongCaseAttemptMessageRead | null> {
+  return apiRequestOrNull<LongCaseAttemptMessageRead>(`${BASE_PATH}/${attemptId}/messages/${messageId}`, {
     getToken,
     signal,
   });
@@ -102,9 +102,9 @@ export function sendChatMessage(
   attemptId: string,
   content: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptMessage> {
+): Promise<LongCaseAttemptMessageRead> {
   const body: LongCaseAttemptMessageCreate = { content };
-  return apiRequest<LongCaseAttemptMessage>(`${BASE_PATH}/${attemptId}/messages`, {
+  return apiRequest<LongCaseAttemptMessageRead>(`${BASE_PATH}/${attemptId}/messages`, {
     method: "POST",
     body,
     getToken,
@@ -119,8 +119,8 @@ export function createExaminationSelection(
   attemptId: string,
   payload: LongCaseAttemptExaminationSelectionCreate,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptExaminationSelection> {
-  return apiRequest<LongCaseAttemptExaminationSelection>(`${BASE_PATH}/${attemptId}/examination-selections`, {
+): Promise<LongCaseAttemptExaminationSelectionRead> {
+  return apiRequest<LongCaseAttemptExaminationSelectionRead>(`${BASE_PATH}/${attemptId}/examination-selections`, {
     method: "POST",
     body: payload,
     getToken,
@@ -132,8 +132,8 @@ export function getExaminationSelections(
   getToken: GetToken,
   attemptId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptExaminationSelection[]> {
-  return apiRequest<LongCaseAttemptExaminationSelection[]>(`${BASE_PATH}/${attemptId}/examination-selections`, {
+): Promise<LongCaseAttemptExaminationSelectionRead[]> {
+  return apiRequest<LongCaseAttemptExaminationSelectionRead[]>(`${BASE_PATH}/${attemptId}/examination-selections`, {
     getToken,
     signal,
   });
@@ -144,8 +144,8 @@ export function getExaminationSelectionById(
   attemptId: string,
   selectionId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptExaminationSelection | null> {
-  return apiRequestOrNull<LongCaseAttemptExaminationSelection>(
+): Promise<LongCaseAttemptExaminationSelectionRead | null> {
+  return apiRequestOrNull<LongCaseAttemptExaminationSelectionRead>(
     `${BASE_PATH}/${attemptId}/examination-selections/${selectionId}`,
     { getToken, signal },
   );
@@ -157,8 +157,8 @@ export function getHistoryResults(
   getToken: GetToken,
   attemptId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptHistoryResult[]> {
-  return apiRequest<LongCaseAttemptHistoryResult[]>(`${BASE_PATH}/${attemptId}/history-results`, {
+): Promise<LongCaseAttemptHistoryResultRead[]> {
+  return apiRequest<LongCaseAttemptHistoryResultRead[]>(`${BASE_PATH}/${attemptId}/history-results`, {
     getToken,
     signal,
   });
@@ -169,8 +169,8 @@ export function getHistoryResultById(
   attemptId: string,
   resultId: string,
   { signal }: CallOptions = {},
-): Promise<LongCaseAttemptHistoryResult | null> {
-  return apiRequestOrNull<LongCaseAttemptHistoryResult>(`${BASE_PATH}/${attemptId}/history-results/${resultId}`, {
+): Promise<LongCaseAttemptHistoryResultRead | null> {
+  return apiRequestOrNull<LongCaseAttemptHistoryResultRead>(`${BASE_PATH}/${attemptId}/history-results/${resultId}`, {
     getToken,
     signal,
   });

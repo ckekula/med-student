@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { LuGrid2X2, LuList } from "react-icons/lu";
-import type { LongCase } from "@/types/osce/longCase";
+import { LongCaseRead } from "@/types/osce/longCase";
 import ExpandableCardGrid from "./expandable-card-grid";
 import ExpandableCardStandard from "./expandable-card-standard";
 
@@ -18,7 +18,7 @@ const VIEW_OPTIONS = [
 }[];
 
 interface LongCaseBrowserProps {
-  longCases: readonly LongCase[];
+  longCases: readonly LongCaseRead[];
 }
 
 export function LongCaseBrowser({ longCases }: LongCaseBrowserProps) {

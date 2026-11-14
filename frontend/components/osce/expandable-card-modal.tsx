@@ -4,7 +4,7 @@ import type { RefObject } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import type { LongCase } from "@/types/osce/longCase";
+import { LongCaseRead } from "@/types/osce/longCase";
 import { getLongCaseImage } from "@/lib/osce/longCaseImages";
 
 type LayoutPart = "card" | "image" | "title" | "specialty" | "button";
@@ -16,7 +16,7 @@ export const getLayoutId = (part: LayoutPart, caseId: string, scope: string) =>
 const MotionLink = motion.create(Link);
 
 interface ExpandedCardModalProps {
-  longCase: LongCase | null;
+  longCase: LongCaseRead | null;
   /** Value from useId(), shared with the list so layout IDs match. */
   scope: string;
   modalRef: RefObject<HTMLDivElement | null>;

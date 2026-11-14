@@ -1,12 +1,12 @@
-import type { LongCase } from "@/types/osce/longCase";
+import type { LongCaseRead } from "@/types/osce/longCase";
 
 // Please take a focused history, perform an appropriate examination, and be ready to discuss the case afterwards.
-export const mockLongCases: readonly LongCase[] = [
+export const mockLongCases: readonly LongCaseRead[] = [
   {
     id: "1",
     title: "Breast lump",
     specialty: "medicine",
-    category: "Breast",
+    category: "breast_carcinoma",
     difficulty: "final_mbbs",
     description: "A 45-year-old female has presented with a breast lump.",
     is_active: true,
@@ -17,7 +17,7 @@ export const mockLongCases: readonly LongCase[] = [
     id: "2",
     title: "Shortness of breath",
     specialty: "medicine",
-    category: "Respiratory",
+    category: "fever_with_respiratory_symptoms_RTI",
     difficulty: "final_mbbs",
     description: "A 65-year-old male has presented with shortness of breath.",
     is_active: true,
@@ -28,7 +28,7 @@ export const mockLongCases: readonly LongCase[] = [
     id: "3",
     title: "Joint pain",
     specialty: "paediatrics",
-    category: "Musculoskeletal",
+    category: "joint_pain",
     difficulty: "final_mbbs",
     description: "A 10-year-old child has presented with joint pain.",
     is_active: true,
@@ -39,7 +39,7 @@ export const mockLongCases: readonly LongCase[] = [
     id: "4",
     title: "Appendicitis",
     specialty: "surgery",
-    category: "Gastrointestinal",
+    category: "gastrointestinal_disorders",
     difficulty: "final_mbbs",
     description: "A 25-year-old male has presented with appendicitis.",
     is_active: true,
@@ -49,7 +49,7 @@ export const mockLongCases: readonly LongCase[] = [
   {
     id: "5",
     title: "Pregnancy complications",
-    category: "Obstretics",
+    category: "obstetric_complications",
     specialty: "gynobs",
     difficulty: "final_mbbs",
     description: "A 30-year-old woman has presented with pregnancy complications.",

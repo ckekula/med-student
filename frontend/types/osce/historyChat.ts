@@ -1,4 +1,4 @@
-import { LongCaseAttemptMessage } from "./longCaseAttempt"
+import { LongCaseAttemptMessageRead } from "./longCaseAttempt"
 
 export interface ChatComposerProps {
   isTimeUp: boolean
@@ -19,7 +19,7 @@ const AVATARS = {
 } as const
 
 export function toChatMessage(
-  message: Pick<LongCaseAttemptMessage, "id" | "sender" | "content">,
+  message: Pick<LongCaseAttemptMessageRead, "id" | "sender" | "content">,
 ): ChatMessage {
   const role = message.sender === "user" ? "user" : "ai"
   return { id: message.id, role, content: message.content, ...AVATARS[role] }

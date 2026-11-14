@@ -1,24 +1,25 @@
 import { apiRequest, apiRequestOrNull, type CallOptions, type GetToken } from "@/lib/api/client";
 import type {
-  Examination,
-  HistoryItem,
-  Investigation,
-  LongCase,
+  ExaminationRead,
+  HistoryItemRead,
+  InvestigationRead,
   LongCaseDetail,
   LongCaseListParams,
-  PatientProfile,
+  LongCaseRead,
+  PatientProfileRead,
+
 } from "@/types/osce/longCase";
 
 const BASE_PATH = "/long-cases";
 
 // Public endpoints
 
-export function getLongCases(params: LongCaseListParams = {}, { signal }: CallOptions = {}): Promise<LongCase[]> {
-  return apiRequest<LongCase[]>(BASE_PATH, { query: { ...params }, signal });
+export function getLongCases(params: LongCaseListParams = {}, { signal }: CallOptions = {}): Promise<LongCaseRead[]> {
+  return apiRequest<LongCaseRead[]>(BASE_PATH, { query: { ...params }, signal });
 }
 
-export function getLongCaseById(longCaseId: string, { signal }: CallOptions = {}): Promise<LongCase | null> {
-  return apiRequestOrNull<LongCase>(`${BASE_PATH}/${longCaseId}`, { signal });
+export function getLongCaseById(longCaseId: string, { signal }: CallOptions = {}): Promise<LongCaseRead | null> {
+  return apiRequestOrNull<LongCaseRead>(`${BASE_PATH}/${longCaseId}`, { signal });
 }
 
 // Authenticated endpoints
@@ -35,8 +36,8 @@ export function getPatientProfile(
   getToken: GetToken,
   longCaseId: string,
   { signal }: CallOptions = {},
-): Promise<PatientProfile | null> {
-  return apiRequestOrNull<PatientProfile>(`${BASE_PATH}/${longCaseId}/patient-profile`, { getToken, signal });
+): Promise<PatientProfileRead | null> {
+  return apiRequestOrNull<PatientProfileRead>(`${BASE_PATH}/${longCaseId}/patient-profile`, { getToken, signal });
 }
 
 // History items
@@ -45,8 +46,8 @@ export function getHistoryItems(
   getToken: GetToken,
   longCaseId: string,
   { signal }: CallOptions = {},
-): Promise<HistoryItem[]> {
-  return apiRequest<HistoryItem[]>(`${BASE_PATH}/${longCaseId}/history-items`, { getToken, signal });
+): Promise<HistoryItemRead[]> {
+  return apiRequest<HistoryItemRead[]>(`${BASE_PATH}/${longCaseId}/history-items`, { getToken, signal });
 }
 
 export function getHistoryItemById(
@@ -54,8 +55,8 @@ export function getHistoryItemById(
   longCaseId: string,
   itemId: string,
   { signal }: CallOptions = {},
-): Promise<HistoryItem | null> {
-  return apiRequestOrNull<HistoryItem>(`${BASE_PATH}/${longCaseId}/history-items/${itemId}`, { getToken, signal });
+): Promise<HistoryItemRead | null> {
+  return apiRequestOrNull<HistoryItemRead>(`${BASE_PATH}/${longCaseId}/history-items/${itemId}`, { getToken, signal });
 }
 
 // Examinations
@@ -64,8 +65,8 @@ export function getExaminations(
   getToken: GetToken,
   longCaseId: string,
   { signal }: CallOptions = {},
-): Promise<Examination[]> {
-  return apiRequest<Examination[]>(`${BASE_PATH}/${longCaseId}/examinations`, { getToken, signal });
+): Promise<ExaminationRead[]> {
+  return apiRequest<ExaminationRead[]>(`${BASE_PATH}/${longCaseId}/examinations`, { getToken, signal });
 }
 
 export function getExaminationById(
@@ -73,8 +74,8 @@ export function getExaminationById(
   longCaseId: string,
   itemId: string,
   { signal }: CallOptions = {},
-): Promise<Examination | null> {
-  return apiRequestOrNull<Examination>(`${BASE_PATH}/${longCaseId}/examinations/${itemId}`, { getToken, signal });
+): Promise<ExaminationRead | null> {
+  return apiRequestOrNull<ExaminationRead>(`${BASE_PATH}/${longCaseId}/examinations/${itemId}`, { getToken, signal });
 }
 
 // Investigations
@@ -83,8 +84,8 @@ export function getInvestigations(
   getToken: GetToken,
   longCaseId: string,
   { signal }: CallOptions = {},
-): Promise<Investigation[]> {
-  return apiRequest<Investigation[]>(`${BASE_PATH}/${longCaseId}/investigations`, { getToken, signal });
+): Promise<InvestigationRead[]> {
+  return apiRequest<InvestigationRead[]>(`${BASE_PATH}/${longCaseId}/investigations`, { getToken, signal });
 }
 
 export function getInvestigationById(
@@ -92,8 +93,8 @@ export function getInvestigationById(
   longCaseId: string,
   itemId: string,
   { signal }: CallOptions = {},
-): Promise<Investigation | null> {
-  return apiRequestOrNull<Investigation>(`${BASE_PATH}/${longCaseId}/investigations/${itemId}`, {
+): Promise<InvestigationRead | null> {
+  return apiRequestOrNull<InvestigationRead>(`${BASE_PATH}/${longCaseId}/investigations/${itemId}`, {
     getToken,
     signal,
   });

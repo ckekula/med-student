@@ -5,18 +5,18 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useExpandedCard } from "@/hooks/use-expandable-card";
 import { getLongCaseImage } from "@/lib/osce/longCaseImages";
-import type { LongCase } from "@/types/osce/longCase";
+import { LongCaseRead } from "@/types/osce/longCase";
 import { ExpandedCardModal, getLayoutId } from "./expandable-card-modal";
 
 interface ExpandableCardGridProps {
-  longCases: readonly LongCase[];
+  longCases: readonly LongCaseRead[];
 }
 
 export default function ExpandableCardGrid({
   longCases,
 }: ExpandableCardGridProps) {
   const scope = useId();
-  const { active, setActive, close, ref } = useExpandedCard<LongCase>();
+  const { active, setActive, close, ref } = useExpandedCard<LongCaseRead>();
 
   return (
     <>

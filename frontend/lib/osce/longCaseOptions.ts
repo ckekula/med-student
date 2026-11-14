@@ -3,16 +3,15 @@
  * Values must match the backend enums exactly (they are sent over the wire);
  * labels are display-only.
  */
-
 import {
-  DIFFICULTY_LEVEL,
-  EXAMINATION_NAME,
-  HISTORY_ITEM_CATEGORY,
-  INVESTIGATION_NAME,
-  LONG_CASE_CATEGORY,
-  SEX,
-  SPECIALTY
-} from "@/types/api-enums.generated";
+  Sex,
+  LongCaseSpecialty,
+  LongCaseCategory,
+  DifficultyLevel,
+  ExaminationName,
+  InvestigationName,
+  HistoryItemCategory,
+} from "@/types/osce/longCase";
 
 export interface Option<T extends string> {
   readonly value: T;
@@ -26,15 +25,17 @@ function buildOptions<T extends string>(
   return values.map((value) => ({ value, label: labels[value] }));
 }
 
-export type Sex = (typeof SEX)[number];
 export const SEX_LABELS: Readonly<Record<Sex, string>> = {
   male: "Male",
   female: "Female",
 };
-export const SEX_OPTIONS = buildOptions(SEX, SEX_LABELS);
+
+export const SEX_OPTIONS = buildOptions(
+  Object.keys(SEX_LABELS) as Sex[],
+  SEX_LABELS
+);
 
 // Specialty
-export type LongCaseSpecialty = (typeof SPECIALTY)[number];
 export const SPECIALTY_LABELS: Readonly<Record<LongCaseSpecialty, string>> = {
   medicine: "Medicine",
   surgery: "Surgery",
@@ -42,18 +43,22 @@ export const SPECIALTY_LABELS: Readonly<Record<LongCaseSpecialty, string>> = {
   gynobs: "Gynaecology & Obstetrics",
   psychiatry: "Psychiatry",
 };
-export const SPECIALTY_OPTIONS = buildOptions(SPECIALTY, SPECIALTY_LABELS);
+export const SPECIALTY_OPTIONS = buildOptions(
+  Object.keys(SPECIALTY_LABELS) as LongCaseSpecialty[],
+  SPECIALTY_LABELS
+);
 
 // Difficulty
-export type DifficultyLevel = (typeof DIFFICULTY_LEVEL)[number];
 export const DIFFICULTY_LABELS: Readonly<Record<DifficultyLevel, string>> = {
   "final_mbbs": "Final MBBS",
   "post_graduate": "Post Graduate",
 };
-export const DIFFICULTY_OPTIONS = buildOptions(DIFFICULTY_LEVEL, DIFFICULTY_LABELS);
+export const DIFFICULTY_OPTIONS = buildOptions(
+  Object.keys(DIFFICULTY_LABELS) as DifficultyLevel[],
+  DIFFICULTY_LABELS
+);
 
 // Category
-export type LongCaseCategory = (typeof LONG_CASE_CATEGORY)[number];
 export const CATEGORY_LABELS: Readonly<Record<LongCaseCategory, string>> = {
   chest_pain: "Chest Pain",
   acute_fever: "Acute Fever",
@@ -96,10 +101,12 @@ export const CATEGORY_LABELS: Readonly<Record<LongCaseCategory, string>> = {
   gynecological_disorders: "Gynaecological Disorders",
   reproductive_health_issues: "Reproductive Health Issues"
 }
-export const CATEGORY_OPTIONS = buildOptions(LONG_CASE_CATEGORY, CATEGORY_LABELS);
+export const CATEGORY_OPTIONS = buildOptions(
+  Object.keys(CATEGORY_LABELS) as LongCaseCategory[],
+  CATEGORY_LABELS
+);
 
 // Examination
-export type ExaminationName = (typeof EXAMINATION_NAME)[number];
 export const EXAMINATION_LABELS: Readonly<Record<ExaminationName, string>> = {
   tendon_xanthomas: "Tendon Xanthomas",
   peripheral_embolic_stigmata: "Peripheral Embolic Stigmata",
@@ -108,10 +115,12 @@ export const EXAMINATION_LABELS: Readonly<Record<ExaminationName, string>> = {
   buergers_test: "Buerger's Test",
   "capillary_refill_time": "Capillary Refill Time",
 };
-export const EXAMINATION_OPTIONS = buildOptions(EXAMINATION_NAME, EXAMINATION_LABELS);
+export const EXAMINATION_OPTIONS = buildOptions(
+  Object.keys(EXAMINATION_LABELS) as ExaminationName[],
+  EXAMINATION_LABELS
+);
 
 // History item category
-export type HistoryItemCategory = (typeof HISTORY_ITEM_CATEGORY)[number];
 export const HISTORY_ITEM_CATEGORY_LABELS: Readonly<Record<HistoryItemCategory, string>> = {
   presenting_complaint: "Presenting complaint",
   history_of_presenting_complaint: "History of presenting complaint",
@@ -131,10 +140,12 @@ export const HISTORY_ITEM_CATEGORY_LABELS: Readonly<Record<HistoryItemCategory, 
   past_obstetric_history: "Past obstetric history",
   past_menstrual_history: "Past menstrual history"
 };
-export const HISTORY_ITEM_CATEGORY_OPTIONS = buildOptions(HISTORY_ITEM_CATEGORY, HISTORY_ITEM_CATEGORY_LABELS);
+export const HISTORY_ITEM_CATEGORY_OPTIONS = buildOptions(
+  Object.keys(HISTORY_ITEM_CATEGORY_LABELS) as HistoryItemCategory[],
+  HISTORY_ITEM_CATEGORY_LABELS
+);
 
 // Investigation
-export type InvestigationName = (typeof INVESTIGATION_NAME)[number];
 export const INVESTIGATION_LABELS: Readonly<Record<InvestigationName, string>> = {
   full_blood_count: "Full Blood Count",
   x_ray: "X Ray",
@@ -143,4 +154,7 @@ export const INVESTIGATION_LABELS: Readonly<Record<InvestigationName, string>> =
   mr_angiography: "MR Angiography",
   ultrasound: "Ultrasound",
 };
-export const INVESTIGATION_OPTIONS = buildOptions(INVESTIGATION_NAME, INVESTIGATION_LABELS);
+export const INVESTIGATION_OPTIONS = buildOptions(
+  Object.keys(INVESTIGATION_LABELS) as InvestigationName[],
+  INVESTIGATION_LABELS
+);
