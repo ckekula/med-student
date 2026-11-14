@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
-import { HISTORY_ITEM_CATEGORY_LABELS } from "@/lib/osce/longCaseOptions";
-import { HISTORY_ITEM_CATEGORY } from "@/types/api-enums.generated";
-import type { LongCaseDetail, PatientProfile } from "@/types/osce/longCase";
+import { HISTORY_ITEM_CATEGORIES, HISTORY_ITEM_CATEGORY_LABELS } from "@/lib/osce/longCaseOptions";
+import type { LongCaseDetail, PatientProfileRead } from "@/types/osce/longCase";
 
 const formatPoints = (points: number) => `${points} ${points === 1 ? "pt" : "pts"}`;
 
@@ -20,14 +19,14 @@ function DetailSection({ title, count, children }: { title: string; count?: numb
 
 const Empty = ({ children }: { children: ReactNode }) => <p className="text-muted-foreground text-sm">{children}</p>;
 
-function ProfileList({ profile }: { profile: PatientProfile }) {
+function ProfileList({ profile }: { profile: PatientProfileRead }) {
   const rows: [string, string | number | null][] = [
-    ["Name", profile.name],
-    ["Age", profile.age],
-    ["Sex", profile.sex],
-    ["Marital status", profile.marital_status],
-    ["Occupation", profile.occupation],
-    ["Location", profile.location],
+    ["Name", profile.name!],
+    ["Age", profile.age!],
+    ["Sex", profile.sex!],
+    ["Marital status", profile.marital_status!],
+    ["Occupation", profile.occupation!],
+    ["Location", profile.location!],
     ["Height", profile.height_cm === null ? null : `${profile.height_cm} cm`],
     ["Weight", profile.weight_kg === null ? null : `${profile.weight_kg} kg`],
   ];
@@ -45,9 +44,9 @@ function ProfileList({ profile }: { profile: PatientProfile }) {
 }
 
 export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
-  const historyGroups = HISTORY_ITEM_CATEGORY.map((category) => ({
+  const historyGroups = HISTORY_ITEM_CATEGORIES.map((category) => ({
     category,
-    items: details.history_items.filter((item) => item.category === category),
+    items: details.history_items!.filter((item) => item.category === category),
   })).filter((group) => group.items.length > 0);
 
   return (
@@ -58,7 +57,7 @@ export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
         {details.patient_profile ? <ProfileList profile={details.patient_profile} /> : <Empty>No patient profile.</Empty>}
       </DetailSection>
 
-      <DetailSection title="History" count={details.history_items.length}>
+      <DetailSection title="History" count={details.history_items!.length}>
         {historyGroups.length === 0 ? (
           <Empty>No history items.</Empty>
         ) : (
@@ -83,12 +82,12 @@ export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
       </DetailSection>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <DetailSection title="Examinations" count={details.examinations.length}>
-          {details.examinations.length === 0 ? (
+        <DetailSection title="Examinations" count={details.examinations!.length}>
+          {details.examinations!.length === 0 ? (
             <Empty>No examinations.</Empty>
           ) : (
             <ul className="grid gap-3">
-              {details.examinations.map((item) => (
+              {details.examinations!.map((item) => (
                 <li key={item.id} className="grid gap-1 text-sm">
                   <div className="flex items-center justify-between gap-3">
                     <span className="font-medium">{item.name}</span>
@@ -101,12 +100,12 @@ export function LongCaseDetails({ details }: { details: LongCaseDetail }) {
           )}
         </DetailSection>
 
-        <DetailSection title="Investigations" count={details.investigations.length}>
-          {details.investigations.length === 0 ? (
+        <DetailSection title="Investigations" count={details.investigations!.length}>
+          {details.investigations!.length === 0 ? (
             <Empty>No investigations.</Empty>
           ) : (
             <ul className="grid gap-3">
-              {details.investigations.map((item) => (
+              {details.investigations!.map((item) => (
                 <li key={item.id} className="grid gap-1 text-sm">
                   <div className="flex items-center justify-between gap-3">
                     <span className="font-medium">{item.name}</span>

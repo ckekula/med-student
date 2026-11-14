@@ -225,7 +225,10 @@ export interface paths {
         /** List My Attempts */
         get: operations["list_my_attempts_api_v1_long_case_attempts_get"];
         put?: never;
-        /** Create Attempt */
+        /**
+         * Create Attempt
+         * @description Creates the user's attempt for a case, or returns the existing one (200).
+         */
         post: operations["create_attempt_api_v1_long_case_attempts_post"];
         delete?: never;
         options?: never;
@@ -259,8 +262,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Messages */
-        get: operations["list_messages_api_v1_long_case_attempts__attempt_id__messages_get"];
+        get?: never;
         put?: never;
         /** Create Message */
         post: operations["create_message_api_v1_long_case_attempts__attempt_id__messages_post"];
@@ -403,7 +405,7 @@ export interface components {
          * AttemptStatus
          * @enum {string}
          */
-        AttemptStatus: "in_progress_history" | "history_complete" | "in_progress_examination" | "examination_complete" | "summary_complete" | "evaluated";
+        AttemptStatus: "started" | "in_progress_history" | "history_complete" | "in_progress_summary" | "summary_complete" | "evaluated";
         /** DifferentialDiagnosisRead */
         DifferentialDiagnosisRead: {
             /** Primary Diagnosis */
@@ -567,6 +569,39 @@ export interface components {
              */
             long_case_id: string;
         };
+        /** LongCaseAttemptDetailRead */
+        LongCaseAttemptDetailRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /**
+             * Long Case Id
+             * Format: uuid
+             */
+            long_case_id: string;
+            status: components["schemas"]["AttemptStatus"];
+            /** Total Score */
+            total_score: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Messages */
+            messages: components["schemas"]["LongCaseAttemptMessageRead"][];
+        };
         /** LongCaseAttemptExaminationSelectionCreate */
         LongCaseAttemptExaminationSelectionCreate: {
             /** Query Text */
@@ -675,7 +710,6 @@ export interface components {
         };
         /** LongCaseAttemptMessageCreate */
         LongCaseAttemptMessageCreate: {
-            sender: components["schemas"]["MessageSender"];
             /** Content */
             content: string;
         };
@@ -713,29 +747,16 @@ export interface components {
              */
             id: string;
             /**
-             * Student Id
+             * User Id
              * Format: uuid
              */
-            student_id: string;
+            user_id: string;
             /**
              * Long Case Id
              * Format: uuid
              */
             long_case_id: string;
             status: components["schemas"]["AttemptStatus"];
-            /**
-             * Started At
-             * Format: date-time
-             */
-            started_at: string;
-            /** History Completed At */
-            history_completed_at: string | null;
-            /** Examination Completed At */
-            examination_completed_at: string | null;
-            /** Summary Completed At */
-            summary_completed_at: string | null;
-            /** Evaluated At */
-            evaluated_at: string | null;
             /** Total Score */
             total_score: number | null;
             /**
@@ -751,18 +772,10 @@ export interface components {
         };
         /**
          * LongCaseAttemptUpdate
-         * @description Progression/evaluation fields. student_id and long_case_id are immutable after creation.
+         * @description Progression/evaluation fields. user_id and long_case_id are immutable after creation.
          */
         LongCaseAttemptUpdate: {
             status?: components["schemas"]["AttemptStatus"] | null;
-            /** History Completed At */
-            history_completed_at?: string | null;
-            /** Examination Completed At */
-            examination_completed_at?: string | null;
-            /** Summary Completed At */
-            summary_completed_at?: string | null;
-            /** Evaluated At */
-            evaluated_at?: string | null;
             /** Total Score */
             total_score?: number | null;
         };
@@ -1023,14 +1036,14 @@ export interface components {
          * MessageSender
          * @enum {string}
          */
-        MessageSender: "student" | "patient";
+        MessageSender: "user" | "ai";
         /** PatientProfileCreate */
         PatientProfileCreate: {
             /** Name */
             name?: string | null;
             /** Age */
             age?: number | null;
-            sex: components["schemas"]["Sex"];
+            sex?: components["schemas"]["Sex"] | null;
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -1048,7 +1061,7 @@ export interface components {
             name?: string | null;
             /** Age */
             age?: number | null;
-            sex: components["schemas"]["Sex"];
+            sex?: components["schemas"]["Sex"] | null;
             /** Occupation */
             occupation?: string | null;
             /** Location */
@@ -2064,7 +2077,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LongCaseAttemptRead"];
+                    "application/json": components["schemas"]["LongCaseAttemptDetailRead"];
                 };
             };
             /** @description Validation Error */
@@ -2160,37 +2173,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LongCaseAttemptRead"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_messages_api_v1_long_case_attempts__attempt_id__messages_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                attempt_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LongCaseAttemptMessageRead"][];
                 };
             };
             /** @description Validation Error */

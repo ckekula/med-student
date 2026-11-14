@@ -14,7 +14,7 @@ import { CATEGORY_LABELS, DIFFICULTY_LABELS, SPECIALTY_LABELS } from "@/lib/osce
 import { toFormValues } from "@/lib/osce/longCaseMappers";
 import type { LongCaseFormValues } from "@/lib/validations/osce/longCase";
 import { cn } from "@/lib/utils";
-import type { LongCase, LongCaseDetail } from "@/types/osce/longCase";
+import type { LongCaseRead, LongCaseDetail } from "@/types/osce/longCase";
 import { DeleteLongCaseDialog } from "./delete-long-case-dialog";
 import { LongCaseDetails } from "./long-case-details";
 import { LongCaseFormDialog } from "./long-case-form-dialog";
@@ -42,7 +42,7 @@ async function fetchDetails(longCaseId: string): Promise<ActionResult<LongCaseDe
   }
 }
 
-export function LongCaseRow({ longCase }: { longCase: LongCase }) {
+export function LongCaseRow({ longCase }: { longCase: LongCaseRead }) {
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
   const [details, setDetails] = useState<DetailsState>({ status: "idle" });

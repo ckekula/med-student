@@ -1,13 +1,13 @@
-import { z } from "zod";
 import {
-  DIFFICULTY_LEVEL,
-  EXAMINATION_NAME,
-  HISTORY_ITEM_CATEGORY,
-  INVESTIGATION_NAME,
-  LONG_CASE_CATEGORY,
-  SEX,
-  SPECIALTY
-} from "@/types/api-enums.generated";
+  CATEGORIES,
+  DIFFICULTY_LEVELS,
+  EXAMINATION_NAMES,
+  HISTORY_ITEM_CATEGORIES,
+  INVESTIGATION_NAMES,
+  SEXES,
+  SPECIALTIES,
+} from "@/lib/osce/longCaseOptions";
+import { z } from "zod";
 
 export const MAX_POINTS = 100;
 export const MAX_ITEMS_PER_SECTION = 100;
@@ -43,7 +43,7 @@ export const patientProfileSchema = z.object({
     .min(0, "Age cannot be negative")
     .max(120, "Age cannot exceed 120")
     .nullable(),
-  sex: z.union([z.literal(""), z.enum(SEX)]),
+  sex: z.union([z.literal(""), z.enum(SEXES)]),
   occupation: optionalText("Occupation", 150),
   location: optionalText("Location", 150),
   marital_status: optionalText("Marital status", 50),
@@ -61,21 +61,21 @@ export const patientProfileSchema = z.object({
 
 export const historyItemSchema = z.object({
   serverId,
-  category: z.enum(HISTORY_ITEM_CATEGORY),
+  category: z.enum(HISTORY_ITEM_CATEGORIES),
   description: requiredText("Description", 2000),
   points,
 });
 
 export const examinationSchema = z.object({
   serverId,
-  name: z.enum(EXAMINATION_NAME),
+  name: z.enum(EXAMINATION_NAMES),
   findings: requiredText("Findings", 2000),
   points,
 });
 
 export const investigationSchema = z.object({
   serverId,
-  name: z.enum(INVESTIGATION_NAME),
+  name: z.enum(INVESTIGATION_NAMES),
   findings: requiredText("Findings", 2000),
   points,
 });
@@ -92,10 +92,10 @@ export const differentialDiagnosisSchema = z.object({
 
 export const longCaseFormSchema = z.object({
   title: requiredText("Title", 200),
-  specialty: z.enum(SPECIALTY),
+  specialty: z.enum(SPECIALTIES),
   // NOT NULL in the database.
-  category: z.enum(LONG_CASE_CATEGORY, { error: "Select a category" }),
-  difficulty: z.enum(DIFFICULTY_LEVEL),
+  category: z.enum(CATEGORIES, { error: "Select a category" }),
+  difficulty: z.enum(DIFFICULTY_LEVELS),
   description: optionalText("Description", 2000),
   is_active: z.boolean(),
   patient_profile: patientProfileSchema,

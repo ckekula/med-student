@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "api:types": "openapi-typescript ../backend/openapi.json -o types/api-schema.d.ts && node scripts/generate-enum-consts.mjs",
+    "api:types": "openapi-typescript ../backend/openapi.json -o types/api-schema.d.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

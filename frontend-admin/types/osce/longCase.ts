@@ -1,129 +1,33 @@
-import type {
-  
-  DifficultyLevel,
-  ExaminationName,
-  HistoryItemCategory,
-  InvestigationName,
-  LongCaseCategory,
-  LongCaseSpecialty,
-  Sex,
-} from "@/lib/osce/longCaseOptions";
+import type { components, operations } from "../api-schema";
 
-// Enums live in `@/lib/osce/longCaseOptions` (single source of truth); re-exported for existing imports.
-export type {
-  DifficultyLevel,
-  ExaminationName,
-  HistoryItemCategory,
-  InvestigationName,
-  LongCaseCategory,
-  LongCaseSpecialty,
-};
+export type LongCaseSpecialty = components["schemas"]["Specialty"];
+export type DifficultyLevel = components["schemas"]["DifficultyLevel"];
+export type LongCaseCategory = components["schemas"]["LongCaseCategory"];
+export type Sex = components["schemas"]["Sex"];
 
-export interface LongCase {
-  id: string;
-  title: string;
-  specialty: LongCaseSpecialty;
-  category: LongCaseCategory; // NOT NULL in the database
-  difficulty: DifficultyLevel;
-  description: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+export type ExaminationName = components["schemas"]["ExaminationName"];
+export type InvestigationName = components["schemas"]["InvestigationName"];
+export type HistoryItemCategory = components["schemas"]["HistoryItemCategory"];
 
-export interface PatientProfile {
-  id: string;
-  long_case_id: string;
-  name: string | null;
-  age: number | null;
-  sex: Sex | null;
-  occupation: string | null;
-  location: string | null;
-  marital_status: string | null;
-  height_cm: number | null;
-  weight_kg: number | null;
-  created_at: string;
-  updated_at: string;
-}
+export type LongCaseRead = components["schemas"]["LongCaseRead"];
+export type LongCaseWrite = components["schemas"]["LongCaseWrite"];
+export type LongCaseUpdate = components["schemas"]["LongCaseUpdate"];
+export type LongCaseDetail = components["schemas"]["LongCaseDetail"];
 
-export interface HistoryItem {
-  id: string;
-  long_case_id: string;
-  category: HistoryItemCategory;
-  description: string;
-  points: number;
-  created_at: string;
-  updated_at: string;
-}
+export type PatientProfileRead = components["schemas"]["PatientProfileRead"];
+export type PatientProfileCreate = components["schemas"]["PatientProfileCreate"];
+export type PatientProfileUpdate = components["schemas"]["PatientProfileUpdate"];
 
-export interface Examination {
-  id: string;
-  long_case_id: string;
-  name: ExaminationName;
-  findings: string;
-  points: number;
-  created_at: string;
-  updated_at: string;
-}
+export type HistoryItemRead = components["schemas"]["HistoryItemRead"];
+export type HistoryItemWrite = components["schemas"]["HistoryItemWrite"];
+export type HistoryItemUpdate = components["schemas"]["HistoryItemUpdate"];
 
-export interface Investigation {
-  id: string;
-  long_case_id: string;
-  name: InvestigationName;
-  findings: string;
-  points: number;
-  created_at: string;
-  updated_at: string;
-}
+export type ExaminationRead = components["schemas"]["LongCaseExaminationRead"];
+export type ExaminationWrite = components["schemas"]["LongCaseExaminationWrite"];
+export type ExaminationUpdate = components["schemas"]["LongCaseExaminationUpdate"];
 
-export interface DifferentialDiagnosis {
-  id: string;
-  long_case_id: string;
-  primary_diagnosis: string;
-  secondary_diagnosis: string | null;
-  etiology: string | null;
-  location_laterality: string | null;
-  severity_stage: string | null;
-  complications: string | null;
-  created_at: string;
-  updated_at: string;
-}
+export type InvestigationRead = components["schemas"]["LongCaseInvestigationRead"];
+export type InvestigationWrite = components["schemas"]["LongCaseInvestigationWrite"];
+export type InvestigationUpdate = components["schemas"]["LongCaseInvestigationUpdate"];
 
-/** Response of GET /long-cases/{id}/details */
-export interface LongCaseDetail extends LongCase {
-  patient_profile: PatientProfile | null;
-  history_items: HistoryItem[];
-  examinations: Examination[];
-  investigations: Investigation[];
-  differential_diagnosis: DifferentialDiagnosis | null;
-}
-
-// Query params
-export interface LongCaseListParams {
-  specialty?: LongCaseSpecialty;
-  is_active?: boolean;
-  skip?: number;
-  limit?: number;
-}
-
-// Write payloads (POST /long-cases/full, PUT /long-cases/{id}/details)
-
-type ServerFields = "id" | "long_case_id" | "created_at" | "updated_at";
-
-/** Child row on write: `id` present = update that row, absent = create it. */
-type ChildInput<T> = Omit<T, ServerFields> & { id?: string };
-
-export type PatientProfileInput = Omit<PatientProfile, ServerFields>;
-export type HistoryItemInput = ChildInput<HistoryItem>;
-export type ExaminationInput = ChildInput<Examination>;
-export type InvestigationInput = ChildInput<Investigation>;
-export type DifferentialDiagnosisInput = ChildInput<DifferentialDiagnosis>;
-
-export interface LongCaseWritePayload
-  extends Pick<LongCase, "title" | "specialty" | "category" | "difficulty" | "description" | "is_active"> {
-  patient_profile: PatientProfileInput | null;
-  history_items: HistoryItemInput[];
-  examinations: ExaminationInput[];
-  investigations: InvestigationInput[];
-  differential_diagnosis: DifferentialDiagnosisInput | null;
-}
+export type LongCaseListParams = operations["list_long_cases_api_v1_long_cases_get"]["parameters"]["query"];

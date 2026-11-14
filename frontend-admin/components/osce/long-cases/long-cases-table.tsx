@@ -1,8 +1,8 @@
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { LongCase } from "@/types/osce/longCase";
+import type { LongCaseRead } from "@/types/osce/longCase";
 import { LongCaseRow } from "./long-case-row";
 
-export function LongCasesTable({ longCases }: { longCases: LongCase[] }) {
+export function LongCasesTable({ longCases }: { longCases: LongCaseRead[] }) {
   return (
     <div className="rounded-lg border">
       <Table>
